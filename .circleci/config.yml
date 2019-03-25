@@ -36,16 +36,20 @@ jobs:
           path: ~/repo
       - restore_cache:
           keys:
-            - v2-native-dependencies-{{ .Branch }}-{{ checksum "tablecloth-native.opam" }}
-            - v2-native-dependencies-{{ .Branch }}-
-            - v2-native-dependencies-
+            - v3-native-dependencies-{{ .Branch }}-{{ checksum "tablecloth-native.opam" }}
+            - v3-native-dependencies-{{ .Branch }}-
+            - v3-native-dependencies-
       # m4 is a system dependency required by conf-m4 -> ocamlfind -> fmt -> alcotest
       - run: sudo apt-get install -y m4
-      - run: opam update && opam install alcotest base dune junit junit_alcotest -y
+      - run: opam repository set-url default https://opam.ocaml.org/
+      - run: opam update
+      - run: opam install alcotest base dune>=1.8.1 junit junit_alcotest ocamlformat>=0.9 -y
       - run: opam config exec -- dune build
       - run: opam config exec -- dune runtest -f
+      - run: opam config exec -- dune build @fmt
+      - run: ocamlformat ../bs/src/*.ml* --check
       - save_cache:
-          key: v2-native-dependencies-{{ .Branch }}-{{ checksum "tablecloth-native.opam" }}
+          key: v3-native-dependencies-{{ .Branch }}-{{ checksum "tablecloth-native.opam" }}
           paths:
             - ~/.opam
 

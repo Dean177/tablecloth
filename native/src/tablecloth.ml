@@ -21,71 +21,89 @@ module Tuple2 = struct
 
   let map_second = mapSecond
 
-  let mapEach ~(f : 'a -> 'x) ~(g : 'b -> 'y) ((a, b) : 'a * 'b) : 'x * 'y = (f a, g b)
+  let mapEach ~(f : 'a -> 'x) ~(g : 'b -> 'y) ((a, b) : 'a * 'b) : 'x * 'y =
+    (f a, g b)
+
 
   let map_each = mapEach
-  
+
   let mapAll ~(f : 'a -> 'b) (a1, a2) = (f a1, f a2)
 
   let map_all = mapAll
 
   let swap (a, b) = (b, a)
 
-  let curry (f : (('a * 'b) -> 'c))  (a : 'a) (b : 'b) : 'c = f (a, b)
+  let curry (f : 'a * 'b -> 'c) (a : 'a) (b : 'b) : 'c = f (a, b)
 
-  let uncurry (f : ('a -> 'b -> 'c)) ((a, b) : ('a * 'b)) : 'c = f a b
+  let uncurry (f : 'a -> 'b -> 'c) ((a, b) : 'a * 'b) : 'c = f a b
 
-  let toList (a, b) = [a; b]
+  let toList (a, b) = [ a; b ]
 
   let to_list = toList
 end
 
 module Tuple3 = struct
   let create a b c = (a, b, c)
-  
+
   let first ((a, _, _) : 'a * 'b * 'c) : 'a = a
 
   let second ((_, b, _) : 'a * 'b * 'c) : 'b = b
-  
+
   let third ((_, _, c) : 'a * 'b * 'c) : 'c = c
 
-  let init ((a, b, _) : 'a * 'b * 'c): ('a * 'b) = (a, b)
+  let init ((a, b, _) : 'a * 'b * 'c) : 'a * 'b = (a, b)
 
-  let tail ((_, b, c) : 'a * 'b * 'c): ('b * 'c) = (b, c)
+  let tail ((_, b, c) : 'a * 'b * 'c) : 'b * 'c = (b, c)
 
-  let mapFirst ~(f : 'a -> 'x) ((a, b, c) : 'a * 'b * 'c) : 'x * 'b *'c = (f a, b, c)
+  let mapFirst ~(f : 'a -> 'x) ((a, b, c) : 'a * 'b * 'c) : 'x * 'b * 'c =
+    (f a, b, c)
+
 
   let map_first = mapFirst
 
-  let mapSecond ~(f : 'b -> 'y) ((a, b, c) : 'a * 'b * 'c) : 'a * 'y * 'c = (a, f b, c)
+  let mapSecond ~(f : 'b -> 'y) ((a, b, c) : 'a * 'b * 'c) : 'a * 'y * 'c =
+    (a, f b, c)
+
 
   let map_second = mapSecond
 
-  let mapThird ~(f : 'c -> 'z) ((a, b, c) : 'a * 'b * 'c) : 'a * 'b * 'z = (a, b, f c)
+  let mapThird ~(f : 'c -> 'z) ((a, b, c) : 'a * 'b * 'c) : 'a * 'b * 'z =
+    (a, b, f c)
+
 
   let map_third = mapThird
 
-  let mapEach ~(f : 'a -> 'x) ~(g : 'b -> 'y) ~(h : 'c -> 'z) ((a, b, c) : 'a * 'b * 'c) : 'x * 'y * 'z = (f a, g b, h c)
+  let mapEach
+      ~(f : 'a -> 'x)
+      ~(g : 'b -> 'y)
+      ~(h : 'c -> 'z)
+      ((a, b, c) : 'a * 'b * 'c) : 'x * 'y * 'z =
+    (f a, g b, h c)
+
 
   let map_each = mapEach
 
-  let mapAll ~(f: 'a -> 'b) (a1, a2, a3) = (f a1, f a2, f a3)
+  let mapAll ~(f : 'a -> 'b) (a1, a2, a3) = (f a1, f a2, f a3)
 
   let map_all = mapAll
 
-  let rotateLeft ((a, b, c) : 'a * 'b * 'c) : ('b * 'c * 'a) = (b, c, a)
+  let rotateLeft ((a, b, c) : 'a * 'b * 'c) : 'b * 'c * 'a = (b, c, a)
 
   let rotate_left = rotateLeft
 
-  let rotateRight ((a, b, c) : 'a * 'b * 'c) : ('c * 'a * 'b) = (c, a, b)
+  let rotateRight ((a, b, c) : 'a * 'b * 'c) : 'c * 'a * 'b = (c, a, b)
 
   let rotate_right = rotateRight
 
-  let curry (f : (('a * 'b * 'c) -> 'd)) (a : 'a) (b : 'b)  (c : 'c) : 'd = f (a, b, c)
+  let curry (f : 'a * 'b * 'c -> 'd) (a : 'a) (b : 'b) (c : 'c) : 'd =
+    f (a, b, c)
 
-  let uncurry (f : 'a -> 'b -> 'c -> 'd) ((a, b, c) : ('a * 'b * 'c)) : 'd =  f a b c 
 
-  let toList ((a, b, c) : ('a * 'a * 'a)) : 'a list = [a; b; c]
+  let uncurry (f : 'a -> 'b -> 'c -> 'd) ((a, b, c) : 'a * 'b * 'c) : 'd =
+    f a b c
+
+
+  let toList ((a, b, c) : 'a * 'a * 'a) : 'a list = [ a; b; c ]
 
   let to_list = toList
 end
@@ -131,7 +149,7 @@ module List = struct
   let elem_index = elemIndex
 
   let rec last (l : 'a list) : 'a option =
-    match l with [] -> None | [a] -> Some a | _ :: tail -> last tail
+    match l with [] -> None | [ a ] -> Some a | _ :: tail -> last tail
 
 
   let member ~(value : 'a) (l : 'a list) : bool =
@@ -287,7 +305,7 @@ module List = struct
       if fx < fy then (x, fx) else (y, fy)
     in
     match ls with
-    | [l] ->
+    | [ l ] ->
         Some l
     | l1 :: lrest ->
         Some (fst <| foldl ~f:minBy ~init:(l1, f l1) lrest)
@@ -300,13 +318,14 @@ module List = struct
   let minimum (list : 'comparable list) : 'comparable option =
     match list with x :: xs -> Some (foldl ~f:min ~init:x xs) | _ -> None
 
+
   let maximumBy ~(f : 'a -> 'comparable) (ls : 'a list) : 'a option =
     let maxBy x (y, fy) =
       let fx = f x in
       if fx > fy then (x, fx) else (y, fy)
     in
     match ls with
-    | [l_] ->
+    | [ l_ ] ->
         Some l_
     | l_ :: ls_ ->
         Some (fst <| foldl ~f:maxBy ~init:(l_, f l_) ls_)
@@ -356,10 +375,8 @@ module List = struct
 
   let insert_at = insertAt
 
-  let splitWhen ~(f : 'a -> bool) (l : 'a list) : ('a list * 'a list) =
-    match findIndex ~f l with
-      | Some index -> splitAt ~index l
-      | None -> (l, []) 
+  let splitWhen ~(f : 'a -> bool) (l : 'a list) : 'a list * 'a list =
+    match findIndex ~f l with Some index -> splitAt ~index l | None -> (l, [])
 
 
   let split_when = splitWhen
@@ -426,7 +443,7 @@ module Option = struct
 
 
   let toList (o : 'a option) : 'a list =
-    match o with None -> [] | Some o -> [o]
+    match o with None -> [] | Some o -> [ o ]
 
 
   let to_list = toList
@@ -506,8 +523,9 @@ module Char = struct
 
   let to_code = toCode
 
-  let fromCode (i : int) : char option = 
+  let fromCode (i : int) : char option =
     if 0 <= i && i <= 255 then Some (Char.chr i) else None
+
 
   let from_code = fromCode
 
@@ -515,15 +533,15 @@ module Char = struct
 
   let to_string = toString
 
-  let fromString (str : string) : char option = match String.length str with
-    | 1 -> Some (String.get str 0)
-    | _ -> None
+  let fromString (str : string) : char option =
+    match String.length str with 1 -> Some str.[0] | _ -> None
+
 
   let from_string = fromString
 
-  let toDigit char = match char with
-    | '0'..'9' -> Some (toCode char - toCode '0')
-    | _ -> None
+  let toDigit char =
+    match char with '0' .. '9' -> Some (toCode char - toCode '0') | _ -> None
+
 
   let to_digit = toDigit
 
@@ -560,7 +578,7 @@ module Char = struct
   let is_printable = isPrintable
 
   let isWhitespace = Base.Char.is_whitespace
-  
+
   let is_whitespace = isWhitespace
 end
 
@@ -641,6 +659,7 @@ module String = struct
   let repeat ~(count : int) (s : string) : string =
     Base.List.init count ~f:(fun _ -> s) |> Base.String.concat
 
+
   let reverse (s : string) = Base.String.rev s
 
   let fromList (l : char list) : string = Base.String.of_char_list l
@@ -671,7 +690,7 @@ module String = struct
     let endCount = length - index in
     let start = dropRight ~count:endCount s in
     let end_ = dropLeft ~count:startCount s in
-    join ~sep:"" [start; insert; end_]
+    join ~sep:"" [ start; insert; end_ ]
 
 
   let insert_at = insertAt
