@@ -1,9 +1,26 @@
+(library
+   (name MyLibTest)
+   (public_name my-lib-test.lib)
+   ; the linkall flag ensures that all of our tests are compiled and the
+   ; -g flag emits debugging information
+   (ocamlopt_flags -linkall -g)
+   ; you will want to depend on the library you are testing as well, however for
+   ; the purposes of this example we are only depending on the test runner itself
+   (libraries rely.lib )
+   (modules (:standard \ RunTests))
+)
 (executable
-  (name test)
-  (flags (-warn-error +A))
-  (libraries tablecloth-native alcotest junit junit_alcotest)
+  ; the for the library is automatically detected because of the name, but we
+  ; need to explicitly specify the package here
+  (package my-lib-test)
+  (name RunTests)
+  (public_name RunTests.exe)
+  (libraries
+    tablecloth-native
+  )
+  (modules RunTests)
 )
 
 (alias
  (name   runtest)
- (action (run ./test.exe)))
+ (action (run ./RunTests.exe)))
