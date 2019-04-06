@@ -1,0 +1,5 @@
+(library 
+  (name ppx_snake_case) 
+  (public_name ppx_snake_case) 
+  (kind ppx_rewriter)
+  (libraries ppxlib (preprocess no_preprocessing))
