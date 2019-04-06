@@ -1,0 +1,28 @@
+{
+  "name": "tablecloth-native",
+  "version": "0.0.5",
+  "description":
+    "Native OCaml library implementing Tablecloth, a cross-platform standard library for OCaml, Bucklescript and ReasonML",
+  "maintainer": "Paul Biggar <paul@darklang.com>",
+  "authors": "Paul Biggar <paul@darklang.com>",
+  "license": "MIT with some exceptions",
+  "homepage": "https://github.com/darklang/tablecloth",
+  "bug-reports": "https://github.com/darklang/tablecloth/issues",
+  "dev-repo": "git://github.com/darklang/tablecloth",
+  "esy": {
+    "doc": "dune build @doc",
+    "build": "dune build -p #{self.name}",
+    "test": "dune runtest"
+  },
+  "scripts": {},
+  "dependencies": {
+    "@opam/base": "v0.11.0",
+    "@opam/dune": "^1.8.1",
+    "ocaml": "~4.6.0"
+  },
+  "devDependencies": {
+    "@opam/merlin": "^3.0.3",
+    "@opam/odoc": "~1.4.0",
+    "ocaml": "~4.6.0"
+  }
+}
