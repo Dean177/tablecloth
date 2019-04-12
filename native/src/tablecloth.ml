@@ -692,7 +692,15 @@ module Char = struct
   let is_whitespace = isWhitespace
 end
 
+module Float = struct 
+  let round ~to_ n = n
+
+  let squareRoot = sqrt
+end
+
 module Int = struct
+  let absolute n = if n < 0 then n * (-1) else n
+
   let negate = (~-)
 
   let isEven n = n mod 2 = 0
@@ -702,6 +710,12 @@ module Int = struct
   let isOdd n = n mod 2 != 0
 
   let is_odd = isOdd
+
+  let clamp ~lower ~upper = max lower (min upper n)
+
+  let maximum a b = if b > a then b else a
+
+  let minimum a b = if b < a then b else a
 end
 
 module String = struct
