@@ -693,29 +693,174 @@ module Char = struct
 end
 
 module Float = struct 
-  let round ~to_ n = n
+  type t = float
 
+  let add = (+.)
+
+  let (+) = (+.)
+
+  let subtract = (-.)
+
+  let (-) = (+.)
+
+  let multiply = ( *. )
+
+  let ( * ) = ( *. )
+
+  let divide = ( /. )
+
+  let ( / ) = ( /. )
+
+  let power = ( ** )
+
+  let ( ** ) = ( ** )
+
+  let negate = Base.Float.neg
+
+  let (~-) = negate
+
+  let absolute = Base.Float.abs 
+
+  let clamp n ~lower ~upper =
+    if n < lower then lower 
+    else if n > upper then upper
+    else n
+
+  let inRange n ~lower ~upper =
+    n >= lower && n < upper
   let squareRoot = sqrt
+
+  let square_root = squareRoot
+
+  let log n ~base = Base.Float.(log10(n) / log10(base))
+
+  let zero = 0.0
+
+  let one = 1.0
+
+  let nan = Base.Float.nan
+
+  let infinity = Base.Float.infinity
+
+  let negativeInfinity = Base.Float.neg_infinity
+  
+  let negative_infinity = negativeInfinity
+
+  let e = Base.Float.euler
+
+  let pi = Base.Float.pi
+
+  let isNaN = Base.Float.is_nan
+
+  let is_nan = isNaN
+
+  let isInfinite = Base.Float.is_inf
+
+  let is_infinite = isInfinite
+
+  let maximum x y = if y > x then y else x
+
+  let minimum x y = if y < x then y else x
+
+  let hypotenuse x y = squareRoot (x * x + y * y)
+
+  let degrees n = n * (pi / 180.0)
+
+  let radians = identity
+
+  let cos = Base.Float.cos
+
+  let acos = Base.Float.acos
+
+  let sin = Base.Float.sin
+
+  let asin = Base.Float.asin
+
+  let tan = Base.Float.tan
+
+  let atan = Base.Float.atan
+
+  let atan2 ~x ~y = Base.Float.atan2 x y
+
+  let round n ~direction = 
+    Base.Float.iround n ~dir:direction
+
+  let floor = round ~direction:`Down
+
+  let ceiling = round ~direction:`Up
+
+  let truncate = round ~direction:`Zero
+  
+  let fromPolar (r, theta) = (r * cos theta, r * sin theta)
+
+  let from_polar = fromPolar
+
+  let toPolar (x, y) = (hypotenuse x y, atan2 ~x ~y)
+
+  let to_polar = toPolar
 end
 
 module Int = struct
-  let absolute n = if n < 0 then n * (-1) else n
+  type t = int
+
+  let minimumValue = Base.Int.min_value
+
+  let maximumValue = Base.Int.max_value
+
+  let zero = 0
+
+  let one = 1
+
+  let add = (+)
+
+  let (+) = (+)
+
+  let subtract = (-)
+
+  let (-) = (-)
+
+  let multiply = ( * )
+
+  let ( * ) = multiply
+
+  let divide = ( / )
+
+  let ( / ) = divide
+
+  let ( // ) = Base.Int.( // )
+
+  let power = Base.Int.( ** )
+
+  let ( ** ) = power
 
   let negate = (~-)
+
+  let (~-) = (~-)
+
+  let modulo n ~by = n mod by
+
+  let remainder n ~by = Base.Int.rem n by
+
+  let maximum = Base.Int.max
+
+  let minimum = Base.Int.min
+
+  let absolute n = if n < 0 then n * (-1) else n
 
   let isEven n = n mod 2 = 0
 
   let is_even = isEven
 
-  let isOdd n = n mod 2 != 0
+  let isOdd n = n mod 2 <> 0
 
   let is_odd = isOdd
 
-  let clamp ~lower ~upper = max lower (min upper n)
+  let clamp n ~lower ~upper = max lower (min upper n)
 
-  let maximum a b = if b > a then b else a
+  let inRange n ~lower ~upper = 
+    n >= lower && n < upper
 
-  let minimum a b = if b < a then b else a
+  let toFloat = Base.Int.to_float
 end
 
 module String = struct
