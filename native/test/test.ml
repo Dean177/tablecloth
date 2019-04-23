@@ -274,6 +274,8 @@ let t_Char () =
   AT.check AT.bool "isWhitespace - returns false for a non-whitespace character" (Char.isWhitespace 'a') false;      
   ()
 
+
+
 let t_List () =
   AT.check (AT.list AT.int) "reverse empty list" (List.reverse []) [];
   AT.check (AT.list AT.int) "reverse one element" (List.reverse [0]) [0];
@@ -313,6 +315,11 @@ let t_List () =
   AT.check (AT.pair (AT.list AT.int) (AT.list AT.int)) "split_when empty list" (List.split_when ~f:(fun x -> x mod 2 = 0) []) ([], []);
 
   ()
+
+let t_Float () =
+  
+
+let t_Int () = 
 
 let t_String () =
   AT.check
@@ -394,6 +401,8 @@ let t_Tuple3 () =
 let suite = [
   ("Array", `Quick, t_Array); 
   ("Char", `Quick, t_Char); 
+  ("Float", `Quick, t_Float); 
+  ("Int", `Quick, t_Int); 
   ("String", `Quick, t_String); 
   ("Tuple2", `Quick, t_Tuple2);
   ("Tuple3", `Quick, t_Tuple3);
