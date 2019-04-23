@@ -1106,16 +1106,16 @@ module Float : sig
     {!Float.atan2} instead!
   *)
 
-  val atan2 : x:t -> y:t -> t
+  val atan2 : y:t -> x:t -> t
   (** This helps you find the angle (in radians) to an (x, y) coordinate. So rather than saying [Float.(atan (y / x))] you can [Float.atan2 ~y ~x] and you can get a full range of angles:
 
     {[Float.atan2 ~y:1. ~x:1. = 0.7853981633974483  (* 45° or pi/4 radians *)]}
 
-    {[Float.atan2 ~y:1. ~x:(-1.) = -0.7853981633974483  (* 135° or 3*pi/4 radians *)]}
+    {[Float.atan2 ~y:1. ~x:(-1.) = 2.3561944901923449  (* 135° or 3 * pi/4 radians *)]}
 
-    {[Float.atan2 ~y:(-1.) ~x:(-1.) = 0.7853981633974483 (* 225° or 5*pi/4 radians *)]}
+    {[Float.atan2 ~y:(-1.) ~x:(-1.) = -(2.3561944901923449) (* 225° or 5 * pi/4 radians *)]}
 
-    {[Float.atan2 ~y:(-1.) ~x:1.) = -0.7853981633974483 (* 315° or 7 * pi/4 radians *)]}
+    {[Float.atan2 ~y:(-1.) ~x:1.) = -(0.7853981633974483) (* 315° or 7 * pi/4 radians *)]}
   *)
 
   (** Conversion *)
@@ -1257,13 +1257,26 @@ module Int : sig
   (** See {!Int.add} *)
 
   val subtract : t -> t -> t
-  (** TODO *)
+  (** Subtract numbers 
+    {[Int.subtract 4 3 = 1]}
+
+    Alternativly the operator can be used:
+
+    {[4 - 3) = 1]}
+  *)      
 
   val ( - ) : t -> t -> t
   (** See {!Int.subtract} *)
 
   val multiply : t -> t -> t
-  (** TODO *)
+  (** Multiply nunbers like 
+
+    {[Int.multiply 2 7 = 14]} 
+
+    Alternativly the operator can be used:
+
+    {[(2.0 * 7.0) = 14.0]}     
+  *)
 
   val ( * ) : t -> t -> t
   (** See {!Int.multiply} *)
@@ -1271,18 +1284,33 @@ module Int : sig
   val divide : t -> t -> t
   (** Integer division:
 
-    {[3 / 2 = 1]}
+    {[Int.divide 3 2 = 1]}
 
-  Notice that the remainder is discarded. *)
+    {[27 / 5 = 5]}
+
+    Notice that the remainder is discarded. *)
 
   val ( / ) : t -> t -> t
   (** See {!Int.divide} *)
 
   val ( // ) : t -> t -> float
-  (** Floating point division *)
+  (** Floating point division 
+    {[3 // 2 = 1.5]}
+
+    {[27 // 5 = 5.25]}
+
+    {[8 // 4 = 2.0]}
+  *)
 
   val power : t -> t -> t
-  (** TODO *)
+  (** Exponentiation, takes the base first, then the exponent. 
+
+    {[Int.power 7 3 = 343]}
+
+    Alternatively the operator can be used:
+
+    {[7 ** 3 = 343]}
+  *)
 
   val ( ** ) : t -> t -> t
   (** See {!Int.power} *)
@@ -1294,7 +1322,12 @@ module Int : sig
 
     {[Int.negate (-7) = 7]}
 
-    {[Int.negate 0 = 0]} *)
+    {[Int.negate 0 = 0]} 
+
+    Alternatively the operator can be used:
+
+    {[~-(7) = (-7)]}
+  *)
 
   val (~-) : t -> t
   (** See {!Int.negate} *)
@@ -1309,46 +1342,39 @@ module Int : sig
 
     [Int.absolute 0 = 0] *)
 
-  (** TODO title *)
-
   val modulo : t -> by:int -> t
   (** Perform [modular arithmetic](https://en.wikipedia.org/wiki/Modular_arithmetic).
     A common trick is to use (n mod 2) to detect even and odd numbers (although you can use {!Int.isEven} or {!Int.isOdd} for this):
-    {[
-      modulo ~by:2 0 = 0
-      modulo ~by:2 1 = 1
-      modulo ~by:2 2 = 0
-      modulo ~by:2 3 = 1
-    ]}
 
-    Our `modulo` function works in the typical mathematical way when you run into negative numbers:
+    {[Int.modulo ~by:2 0 = 0]}
+
+    {[Int.modulo ~by:2 1 = 1]}
+
+    {[Int.modulo ~by:2 2 = 0]}
+
+    {[Int.modulo ~by:2 3 = 1]}
+
+    Our [modulo] function works in the typical mathematical way when you run into negative numbers:
 
     {[
-      List.map ~f:(modulo ~by:4) [(-5); (-4); -3; -2; -1;  0;  1;  2;  3;  4;  5 ] =
+      List.map ~f:(Int.modulo ~by:4) [(-5); (-4); -3; -2; -1;  0;  1;  2;  3;  4;  5 ] =
         [3; 0; 1; 2; 3; 0; 1; 2; 3; 0; 1]
     ]}
 
     Use {!Int.remainder} for a different treatment of negative numbers.
-
-    Read Daan Leijen’s [Division and Modulus for Computer Scientists][dm] for more
-    information.
-
-    [dm]: https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
   *)
 
   val remainder : t -> by:int -> t
   (** Get the remainder after division. Here are bunch of examples of dividing by four:
 
     {[
-      List.map ~f:(remainder ~by:4) [ -5; -4; -3; -2; -1;  0;  1;  2;  3;  4;  5 ] =    
-        [-1; 0; -3; -2; -1; 0; 1; 2; 3; 0; 1]
+      List.map ~f:(Int.remainder ~by:4) [(-5); (-4); (-3); (-2); (-1); 0; 1; 2; 3; 4; 5] =    
+        [(-1); 0; (-3); (-2); (-1); 0; 1; 2; 3; 0; 1]
     ]}
     
 
     Use {!Int.modulo} for a different treatment of negative numbers.    
   *)
-
-  (** TODO title *)
 
   val maximum : t -> t -> t
   (** Returns the larger of two [int]s 
@@ -1364,8 +1390,6 @@ module Int : sig
 
     {[Int.minimum (-4) (-1) = (-4)]} *)
 
-  (** TODO title *)
-
   val isEven : t -> bool
   (** Check if an [int] is even
 
@@ -1379,6 +1403,7 @@ module Int : sig
 
   val isOdd : t -> bool
   (** Check if an [int] is odd
+
     {[Int.isOdd 7 = true]}
 
     {[Int.isOdd 8 = false]}

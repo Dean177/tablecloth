@@ -780,7 +780,7 @@ module Float = struct
 
   let atan = Base.Float.atan
 
-  let atan2 ~x ~y = Base.Float.atan2 x y
+  let atan2 ~y ~x = Base.Float.atan2 y x
 
   let round n ~direction = 
     Base.Float.iround n ~dir:direction
