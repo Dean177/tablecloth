@@ -728,6 +728,7 @@ module Float = struct
 
   let inRange n ~lower ~upper =
     n >= lower && n < upper
+    
   let squareRoot = sqrt
 
   let square_root = squareRoot

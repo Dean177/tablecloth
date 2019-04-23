@@ -980,19 +980,11 @@ module Float : sig
   (** Checks if [n] is between [lower] and up to, but not including, [upper]. 
     If [lower] is not specified, it's set to to [0.0]. 
     
-    {[Float.inRange ~lower:2 ~upper:4 3 = true]}
+    {[Float.inRange ~lower:2. ~upper:4. 3. = true]}
   
-    {[Float.inRange ~upper:8 4 = true]}
+    {[Float.inRange ~lower:1. ~upper:2. 2. = false]}
   
-    {[Float.inRange ~upper:2 4 = false]}
-  
-    {[Float.inRange ~upper2 2 = false]}
-  
-    {[Float.inRange ~lower:1.2, 2 = true]}
-  
-    {[Float.inRange ~lower:5.2, 4 = false]}
-  
-    {[Float.inRange -3 ~lower:-6 ~upper:-2 = true]}
+    {[Float.inRange ~lower:5.2 ~upper:7.9 9.6 = false]}      
   *)
 
   (** Angles *) 
@@ -1419,28 +1411,17 @@ module Int : sig
 
     {[Int.clamp ~lower:0 ~upper:8 9 = 8]}
 
-    {[Int.clamp ~lower:(-10) ~upper:(-5) 5 = -5]}
-
-    {[Int.clamp ~lower:10 ~upper:(-5) 5 = 5]} TODO WTF is this example?
+    {[Int.clamp ~lower:(-10) ~upper:(-5) 5 = (-5)]}
   *)
 
-  val inRange : t -> lower:int -> upper:int -> bool
-  (** Checks if [n] is between [lower] and up to, but not including, [upper]. 
-    If [lower] is not specified, it's set to to [0]. 
+  val inRange : t -> lower:t -> upper:t -> bool
+  (** Checks if [n] is between [lower] and up to, but not including, [upper].     
     
     {[Int.inRange ~lower:2 ~upper:4 3 = true]}
+
+    {[Int.inRange ~lower:5 ~upper:8 4 = false]}
   
-    {[Int.inRange ~upper:8 4 = true]}
-  
-    {[Int.inRange ~upper:2 4 = false]}
-  
-    {[Int.inRange ~upper2 2 = false]}
-  
-    {[Int.inRange ~lower:1.2, 2 = true]}
-  
-    {[Int.inRange ~lower:5.2, 4 = false]}
-  
-    {[Int.inRange -3, ~lower:-6 ~upper:-2 = true]}
+    {[Int.inRange ~lower:(-6) ~upper:(-2) (-3) = true]}
   *)
 
   (** Conversion *)

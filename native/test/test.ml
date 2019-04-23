@@ -281,7 +281,14 @@ let t_Float () =
   AT.check (AT.float 0.) "atan2" (-0.7853981633974483) (Float.atan2 ~y:(-1.) ~x:1.);
   ()
 
-let t_Int () = 
+let t_Int () =   
+  AT.check AT.int "clamp" 5 (Int.clamp ~lower:0 ~upper:8 5);
+  AT.check AT.int "clamp" 8 (Int.clamp ~lower:0 ~upper:8 9);
+  AT.check AT.int "clamp" (-5) (Int.clamp ~lower:(-10) ~upper:(-5) 5);
+
+  AT.check AT.bool "inRange" true (Int.inRange ~lower:2 ~upper:4 3);
+  AT.check AT.bool "inRange" false (Int.inRange ~lower:5 ~upper:8 4);
+  AT.check AT.bool "inRange" true (Int.inRange ~lower:(-6) ~upper:(-2) (-3));  
   ()
 
 let t_List () =
