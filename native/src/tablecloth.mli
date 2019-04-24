@@ -1669,7 +1669,7 @@ module Tuple2 : sig
 
       [let sum (a : int) (b: int) : int = a + b]
 
-      [let uncurriedSum : (int * int) -> t = uncurry add]
+      [let uncurriedSum : (int * int) -> int = uncurry add]
 
       [uncurriedSum (3, 4) = 7]
   *)
@@ -1817,7 +1817,7 @@ module Tuple3 : sig
 
       [let sum (a : int) (b : int) (c : int) : int = a + b + c]
 
-      [let uncurriedSum : (int * int * int) -> t = uncurry sum]
+      [let uncurriedSum : (int * int * int) -> int = uncurry sum]
 
       [uncurriedSum (3, 4, 5) = 12] *)
   
