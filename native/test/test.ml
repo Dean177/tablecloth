@@ -221,7 +221,6 @@ let t_Array () =
   
   ()
 
-
 let t_Char () =
   AT.check AT.int "toCode" (Char.toCode 'a') 97;
 
@@ -274,12 +273,95 @@ let t_Char () =
   AT.check AT.bool "isWhitespace - returns false for a non-whitespace character" (Char.isWhitespace 'a') false;      
   ()
 
-let t_Float () =
-  AT.check (AT.float 0.) "atan2" 0.7853981633974483 (Float.atan2 ~y:1. ~x:1.);
-  AT.check (AT.float 0.) "atan2" 2.3561944901923449 (Float.atan2 ~y:1. ~x:(-1.));
-  AT.check (AT.float 0.) "atan2" (-2.3561944901923449) (Float.atan2 ~y:(-1.) ~x:(-1.));
-  AT.check (AT.float 0.) "atan2" (-0.7853981633974483) (Float.atan2 ~y:(-1.) ~x:1.);
+let t_Float () = Float.(
+  AT.check (AT.float 0.) "log" 2. (log ~base:10. 100.);
+  AT.check (AT.float 0.) "log" 8. (log ~base:2. 256.);
+
+  AT.check (AT.float 0.) "clamp" 5. (clamp ~lower:0. ~upper:8. 5.);
+  AT.check (AT.float 0.) "clamp" 8. (clamp ~lower:0. ~upper:8. 9.);
+  AT.check (AT.float 0.) "clamp" (-5.) (clamp ~lower:(-10.) ~upper:(-5.) 5.);
+
+  AT.check (AT.pair (AT.float 0.) (AT.float 0.)) "toPolar" (5.0, 0.9272952180016122) (toPolar (3.0, 4.0));
+
+  AT.check (AT.float 0.) "cos" 0.5000000000000001 ((cos (degrees 60.)));
+
+  AT.check (AT.float 0.) "atan2" 0.7853981633974483 (atan2 ~y:1. ~x:1.);
+  AT.check (AT.float 0.) "atan2" 2.3561944901923449 (atan2 ~y:1. ~x:(-1.));
+  AT.check (AT.float 0.) "atan2" (-2.3561944901923449) (atan2 ~y:(-1.) ~x:(-1.));
+  AT.check (AT.float 0.) "atan2" (-0.7853981633974483) (atan2 ~y:(-1.) ~x:1.);
+
+  AT.check (AT.float 0.) "round `Zero" 1. (round ~direction:(`Zero) 1.2);
+  AT.check (AT.float 0.) "round `Zero" 1. (round ~direction:(`Zero) 1.5);    
+  AT.check (AT.float 0.) "round `Zero" 1. (round ~direction:(`Zero) 1.8);    
+  AT.check (AT.float 0.) "round `Zero" (-1.) (round ~direction:(`Zero) (-1.2));    
+  AT.check (AT.float 0.) "round `Zero" (-1.) (round ~direction:(`Zero) (-1.5));    
+  AT.check (AT.float 0.) "round `Zero" (-1.) (round ~direction:(`Zero) (-1.8));    
+
+  AT.check (AT.float 0.) "round `AwayFromZero" 2. (round ~direction:(`AwayFromZero) 1.2);
+  AT.check (AT.float 0.) "round `AwayFromZero" 2. (round ~direction:(`AwayFromZero) 1.5);    
+  AT.check (AT.float 0.) "round `AwayFromZero" 2. (round ~direction:(`AwayFromZero) 1.8);    
+  AT.check (AT.float 0.) "round `AwayFromZero" (-2.) (round ~direction:(`AwayFromZero) (-1.2));    
+  AT.check (AT.float 0.) "round `AwayFromZero" (-2.) (round ~direction:(`AwayFromZero) (-1.5));    
+  AT.check (AT.float 0.) "round `AwayFromZero" (-2.) (round ~direction:(`AwayFromZero) (-1.8));    
+
+  AT.check (AT.float 0.) "round `Up" 2. (round ~direction:(`Up) 1.2);
+  AT.check (AT.float 0.) "round `Up" 2. (round ~direction:(`Up) 1.5);    
+  AT.check (AT.float 0.) "round `Up" 2. (round ~direction:(`Up) 1.8);    
+  AT.check (AT.float 0.) "round `Up" (-1.) (round ~direction:(`Up) (-1.2));    
+  AT.check (AT.float 0.) "round `Up" (-1.) (round ~direction:(`Up) (-1.5));    
+  AT.check (AT.float 0.) "round `Up" (-1.) (round ~direction:(`Up) (-1.8));
+
+  AT.check (AT.float 0.) "round `Down" 1. (round ~direction:(`Down) 1.2);
+  AT.check (AT.float 0.) "round `Down" 1. (round ~direction:(`Down) 1.5);    
+  AT.check (AT.float 0.) "round `Down" 1. (round ~direction:(`Down) 1.8);    
+  AT.check (AT.float 0.) "round `Down" (-2.) (round ~direction:(`Down) (-1.2));    
+  AT.check (AT.float 0.) "round `Down" (-2.) (round ~direction:(`Down) (-1.5));    
+  AT.check (AT.float 0.) "round `Down" (-2.) (round ~direction:(`Down) (-1.8));
+
+  AT.check (AT.float 0.) "round `Closest `Zero" 1. (round ~direction:(`Closest `Zero) 1.2);
+  AT.check (AT.float 0.) "round `Closest `Zero" 1. (round ~direction:(`Closest `Zero) 1.5);    
+  AT.check (AT.float 0.) "round `Closest `Zero" 2. (round ~direction:(`Closest `Zero) 1.8);    
+  AT.check (AT.float 0.) "round `Closest `Zero" (-1.) (round ~direction:(`Closest `Zero) (-1.2));    
+  AT.check (AT.float 0.) "round `Closest `Zero" (-1.) (round ~direction:(`Closest `Zero) (-1.5));    
+  AT.check (AT.float 0.) "round `Closest `Zero" (-2.) (round ~direction:(`Closest `Zero) (-1.8));    
+
+  AT.check (AT.float 0.) "round `Closest `AwayFromZero" 1. (round ~direction:(`Closest `AwayFromZero) 1.2);
+  AT.check (AT.float 0.) "round `Closest `AwayFromZero" 2. (round ~direction:(`Closest `AwayFromZero) 1.5);    
+  AT.check (AT.float 0.) "round `Closest `AwayFromZero" 2. (round ~direction:(`Closest `AwayFromZero) 1.8);    
+  AT.check (AT.float 0.) "round `Closest `AwayFromZero" (-1.) (round ~direction:(`Closest `AwayFromZero) (-1.2
+  ));    
+  AT.check (AT.float 0.) "round `Closest `AwayFromZero" (-2.) (round ~direction:(`Closest `AwayFromZero) (-1.5));    
+  AT.check (AT.float 0.) "round `Closest `AwayFromZero" (-2.) (round ~direction:(`Closest `AwayFromZero) (-1.8));    
+
+  AT.check (AT.float 0.) "round `Closest `Up" 1. (round ~direction:(`Closest `Up) 1.2);
+  AT.check (AT.float 0.) "round `Closest `Up" 2. (round ~direction:(`Closest `Up) 1.5);    
+  AT.check (AT.float 0.) "round `Closest `Up" 2. (round ~direction:(`Closest `Up) 1.8);    
+  AT.check (AT.float 0.) "round `Closest `Up" (-1.) (round ~direction:(`Closest `Up) (-1.2));    
+  AT.check (AT.float 0.) "round `Closest `Up" (-1.) (round ~direction:(`Closest `Up) (-1.5));    
+  AT.check (AT.float 0.) "round `Closest `Up" (-2.) (round ~direction:(`Closest `Up) (-1.8));    
+
+  AT.check (AT.float 0.) "round `Closest `Down" 1. (round ~direction:(`Closest `Down) 1.2);
+  AT.check (AT.float 0.) "round `Closest `Down" 1. (round ~direction:(`Closest`Down) 1.5);    
+  AT.check (AT.float 0.) "round `Closest `Down" 2. (round ~direction:(`Closest `Down) 1.8);    
+  AT.check (AT.float 0.) "round `Closest `Down" (-1.) (round ~direction:(`Closest `Down) (-1.2));    
+  AT.check (AT.float 0.) "round `Closest `Down" (-2.) (round ~direction:(`Closest `Down) (-1.5));    
+  AT.check (AT.float 0.) "round `Closest `Down" (-2.) (round ~direction:(`Closest `Down) (-1.8));    
+
+  AT.check (AT.float 0.) "round `Closest `ToEven" 1. (round ~direction:(`Closest `ToEven) 1.2);
+  AT.check (AT.float 0.) "round `Closest `ToEven" 2. (round ~direction:(`Closest`ToEven) 1.5);    
+  AT.check (AT.float 0.) "round `Closest `ToEven" 2. (round ~direction:(`Closest `ToEven) 1.8);    
+  AT.check (AT.float 0.) "round `Closest `ToEven" 2. (round ~direction:(`Closest `ToEven) 2.2);
+  AT.check (AT.float 0.) "round `Closest `ToEven" 2. (round ~direction:(`Closest`ToEven) 2.5);    
+  AT.check (AT.float 0.) "round `Closest `ToEven" 3. (round ~direction:(`Closest `ToEven) 2.8);    
+  AT.check (AT.float 0.) "round `Closest `ToEven" (-1.) (round ~direction:(`Closest `ToEven) (-1.2));    
+  AT.check (AT.float 0.) "round `Closest `ToEven" (-2.) (round ~direction:(`Closest `ToEven) (-1.5));    
+  AT.check (AT.float 0.) "round `Closest `ToEven" (-2.) (round ~direction:(`Closest `ToEven) (-1.8));    
+  AT.check (AT.float 0.) "round `Closest `ToEven" (-2.) (round ~direction:(`Closest `ToEven) (-2.2));    
+  AT.check (AT.float 0.) "round `Closest `ToEven" (-2.) (round ~direction:(`Closest `ToEven) (-2.5));    
+  AT.check (AT.float 0.) "round `Closest `ToEven" (-3.) (round ~direction:(`Closest `ToEven) (-2.8));    
+
   ()
+)
 
 let t_Int () =   
   AT.check AT.int "clamp" 5 (Int.clamp ~lower:0 ~upper:8 5);
@@ -370,8 +452,6 @@ let t_Tuple2 () =
   AT.check (AT.list AT.int) "toList" (Tuple2.toList (3, 4)) [3; 4;];
 
   ()
-
-
 
 let t_Tuple3 () =
   AT.check (trio AT.int AT.int AT.int) "create" (Tuple3.create 3 4 5) (3, 4, 5);

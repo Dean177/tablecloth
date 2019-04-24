@@ -728,6 +728,8 @@ module Float = struct
 
   let inRange n ~lower ~upper =
     n >= lower && n < upper
+
+  let in_range = inRange
     
   let squareRoot = sqrt
 
@@ -783,14 +785,46 @@ module Float = struct
 
   let atan2 ~y ~x = Base.Float.atan2 y x
 
-  let round n ~direction = 
-    Base.Float.iround n ~dir:direction
+  type direction = [
+    | `Zero 
+    | `AwayFromZero 
+    | `Up 
+    | `Down 
+    | `Closest of [
+      | `Zero 
+      | `AwayFromZero 
+      | `Up 
+      | `Down
+      | `ToEven 
+    ]
+  ]
 
-  let floor = round ~direction:`Down
+  let round ?(direction = (`Closest `Up)) n = 
+    match direction with
+    | `Up | `Down | `Zero as dir -> Base.Float.round n ~dir
+    | `AwayFromZero -> (
+        if n < 0. then Base.Float.round n ~dir:`Down
+        else Base.Float.round n ~dir:`Up
+      )
+    | (`Closest `Zero) -> (
+        if n > 0. then Base.Float.round (n -. 0.5) ~dir:`Up
+        else Base.Float.round (n +. 0.5) ~dir:`Down
+      )
+    | `Closest `AwayFromZero -> (
+        if n > 0. then Base.Float.round (n +. 0.5) ~dir:`Down
+        else Base.Float.round (n -. 0.5) ~dir:`Up
+      )
+    | (`Closest `Down) -> (
+        Base.Float.round (n -. 0.5) ~dir:`Up           
+      )
+    | (`Closest `Up) -> Base.Float.round_nearest n
+    | (`Closest `ToEven) -> Base.Float.round_nearest_half_to_even n
 
-  let ceiling = round ~direction:`Up
+  let floor = Base.Float.round_down
 
-  let truncate = round ~direction:`Zero
+  let ceiling = Base.Float.round_up
+
+  let truncate = Base.Float.round_towards_zero
   
   let fromPolar (r, theta) = (r * cos theta, r * sin theta)
 
@@ -799,6 +833,22 @@ module Float = struct
   let toPolar (x, y) = (hypotenuse x y, atan2 ~x ~y)
 
   let to_polar = toPolar
+
+  let fromInt = Base.Float.of_int
+
+  let from_int = fromInt
+
+  let toInt = Base.Float.iround_towards_zero
+
+  let to_int = toInt
+
+  let fromString = Float.of_string_opt
+
+  let from_string = fromString
+
+  let toString = Base.Float.to_string
+
+  let to_string = toString
 end
 
 module Int = struct
@@ -806,7 +856,11 @@ module Int = struct
 
   let minimumValue = Base.Int.min_value
 
+  let minimum_value = minimumValue
+
   let maximumValue = Base.Int.max_value
+
+  let maximum_value = maximumValue
 
   let zero = 0
 
@@ -861,7 +915,19 @@ module Int = struct
   let inRange n ~lower ~upper = 
     n >= lower && n < upper
 
+  let in_range = inRange
+
   let toFloat = Base.Int.to_float
+
+  let to_float = toFloat
+
+  let toString = Base.Int.to_string
+
+  let to_string = toString
+
+  let fromString = int_of_string_opt
+
+  let from_string = fromString
 end
 
 module String = struct
