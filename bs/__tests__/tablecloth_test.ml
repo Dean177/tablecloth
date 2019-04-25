@@ -395,6 +395,22 @@ let () =
     );
   );
 
+  describe "Float" (fun () -> Float.(
+    describe "power" (fun () -> 
+      test "maximumBy non-empty list" (fun () -> 
+        expect (power 7. 3.) |> toEqual 343.
+      );
+    );
+  ));
+
+  describe "Int" (fun () -> Int.(
+    describe "power" (fun () -> 
+      test "maximumBy non-empty list" (fun () -> 
+        expect (power 7 3) |> toEqual 343
+      );
+    );
+  ));
+
   describe "List" (fun () ->
     describe "reverse" (fun () ->
       test "reverse empty list" (fun () -> expect (List.reverse []) |> toEqual []);
