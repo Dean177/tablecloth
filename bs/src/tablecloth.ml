@@ -673,6 +673,9 @@ module Float = struct
 
   let absolute = Js.Math.abs_float
 
+  let modulo x ~by = mod_float x by
+
+  let remainder x ~by = mod_float x by
   let clamp n ~lower ~upper =
     if n < lower then lower 
     else if n > upper then upper
@@ -738,41 +741,75 @@ module Float = struct
   let atan2 ~y ~x = Js.Math.atan2 ~y ~x ()
 
   type direction = [
-    | `Zero 
-    | `AwayFromZero 
-    | `Up 
-    | `Down 
+    | `Zero
+    | `AwayFromZero
+    | `Up
+    | `Down
     | `Closest of [
-      | `Zero 
-      | `AwayFromZero 
-      | `Up 
+      | `Zero
+      | `AwayFromZero
+      | `Up
       | `Down
-      | `ToEven 
+      | `ToEven
     ]
   ]
 
-  let round ?(direction = (`Closest `Up)) n = 
+  let round ?(direction = (`Closest `Up)) n =
     match direction with
     | `Up -> Js.Math.ceil_float n
     | `Down -> Js.Math.floor_float n
     | `Zero -> Js.Math.trunc n
     | `AwayFromZero -> (
-        if n < 0. then Js.Math.ceil_float n
+        if n > 0. then Js.Math.ceil_float n
         else Js.Math.floor_float n
       )
     | (`Closest `Zero) -> (
         if n > 0. then Js.Math.ceil_float (n -. 0.5)
-        else Js.Math.floor_float (n +. 0.5)        
+        else Js.Math.floor_float (n +. 0.5)
       )
     | `Closest `AwayFromZero -> (
         if n > 0. then Js.Math.floor_float (n +. 0.5)
         else Js.Math.ceil_float (n -. 0.5)
       )
     | (`Closest `Down) -> (
-        Js.Math.fround (n -. 0.5)
+        Js.Math.ceil_float (n -. 0.5)
       )
-    | (`Closest `Up) -> Js.Math.fround n
-    | (`Closest `ToEven) -> Js.Math.fround n
+    | (`Closest `Up) -> Js.Math.round n
+    | (`Closest `ToEven) -> (
+        (* Outside of the range (roundNearestLowerBound..roundNearestUpperBound), all representable doubles
+           are integers in the mathematical sense, and [round_nearest] should be identity.
+
+           However, for odd numbers with the absolute value between 2**52 and 2**53, the formula
+           [round x = floor (x + 0.5)] does not hold:
+
+           {v
+             # let naiveRoundNearest x = floor (x +. 0.5);;
+             # let x = 2. ** 52. +. 1.;;
+             val x : float = 4503599627370497.
+             # naive_round_nearest x;;
+             - :     float = 4503599627370498.
+           v}
+        *)
+
+        let roundNearestLowerBound = -.(2. ** 52.) in
+        let roundNearestUpperBound =    2. ** 52. in
+        if n <= roundNearestLowerBound || n >= roundNearestUpperBound then
+          n +. 0.
+        else
+          let floor = floor n in
+          let ceil_or_succ = floor +. 1. in
+          let diff_floor = n -. floor in
+          let diff_ceil = ceil_or_succ -. n in
+          if diff_floor < diff_ceil then
+            floor
+          else if diff_floor > diff_ceil then
+            ceil_or_succ
+          else if modulo floor ~by:2. = 0. then
+            (* exact tie, pick the even *)
+            floor
+          else
+            ceil_or_succ
+    )
 
   let floor = Js.Math.floor_float
 
@@ -792,17 +829,17 @@ module Float = struct
 
   let from_int = fromInt
 
-  let toInt f = 
-    if Js.Float.isFinite f then 
+  let toInt f =
+    if Js.Float.isFinite f then
       Some (Js.Math.unsafe_trunc f)
     else
-      None 
+      None
 
   let to_int = toInt
 
-  let fromString s = 
-    let f = Js.Float.fromString s in
-    if isNaN f then None else Some f
+  let fromString s =
+    let n = Js.Float.fromString s in
+    if isNaN n then None else Some n
 
   let from_string = fromString
 
@@ -872,7 +909,7 @@ module Int = struct
 
   let clamp n ~lower ~upper = max lower (min upper n)
 
-  let inRange n ~lower ~upper = 
+  let inRange n ~lower ~upper =
     n >= lower && n < upper
 
   let in_range = inRange
@@ -885,7 +922,7 @@ module Int = struct
 
   let to_string = toString
 
-  let fromString s = 
+  let fromString s =
     match int_of_string s with
     | i -> Some i
     | exception Failure _ -> None

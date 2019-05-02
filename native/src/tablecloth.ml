@@ -701,7 +701,7 @@ module Float = struct
 
   let subtract = (-.)
 
-  let (-) = (+.)
+  let (-) = (-.)
 
   let multiply = ( *. )
 
@@ -916,6 +916,8 @@ module Int = struct
     n >= lower && n < upper
 
   let in_range = inRange
+
+  let range n = Array.initialize ~length:n ~f:identity
 
   let toFloat = Base.Int.to_float
 

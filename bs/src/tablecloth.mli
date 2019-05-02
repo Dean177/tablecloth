@@ -2417,11 +2417,11 @@ module Float : sig
       6.022e23   (* = (6.022 * 10^23) *)
       6.022e+23  (* = (6.022 * 10^23) *)
       1.602e−19  (* = (1.602 * 10^-19) *)
-      1e3        (* = (1 * 10 ** 3) = 1000 *)
+      1e3        (* = (1 * 10 ** 3) = 1000. *)
     ]}
 
     Without opening this module you can use the [.] suffixed operators e.g
-    
+
     {[ 1. +. 2. /. 0.25 *. 2. = 17. ]}
 
     But by opening this module locally you can use the un-suffixed operators
@@ -2430,27 +2430,27 @@ module Float : sig
 
     {b Historical Note: } The particular details of floats (e.g. [NaN]) are
     specified by {{: https://en.wikipedia.org/wiki/IEEE_754 } IEEE 754 } which is literally hard-coded into almost all
-    CPUs in the world. 
+    CPUs in the world.
   *)
 
   type t = float
 
   (** {1 Constants} *)
 
-  val zero : t 
+  val zero : t
   (** The literal [0.0] as a named value *)
 
-  val one : t 
+  val one : t
   (** The literal [1.0] as a named value *)
-  
+
   val nan : t
   (** [NaN] as a named value. NaN stands for {{: https://en.wikipedia.org/wiki/NaN } not a number}. *)
 
   val infinity : t
-  (** Positive {{: https://en.wikipedia.org/wiki/IEEE_754-1985#Positive_and_negative_infinity } infinity } 
+  (** Positive {{: https://en.wikipedia.org/wiki/IEEE_754-1985#Positive_and_negative_infinity } infinity }
 
     {[Float.log ~base:10.0 0.0 = Float.infinity]} *)
-  
+
   val negativeInfinity : t
   (** Negative infinity, see {!Float.infinity} *)
 
@@ -2471,8 +2471,8 @@ module Float : sig
 
     {[Float.(3.14 + 3.14 = 6.28)]}
 
-    Although [int]s and [float]s support many of the same basic operations such as 
-    addition and subtraction you {b cannot} [add] an [int] and a [float] directly which 
+    Although [int]s and [float]s support many of the same basic operations such as
+    addition and subtraction you {b cannot} [add] an [int] and a [float] directly which
     means you need to use functions like {!Int.toFloat} or {!Float.roundToInt} to convert both values to the same type.
 
     So if you needed to add a {!List.length} to a [float] for some reason, you
@@ -2495,25 +2495,25 @@ module Float : sig
   (** See {!Float.add} *)
 
   val subtract : t -> t -> t
-  (** Subtract numbers 
+  (** Subtract numbers
     {[Float.subtract 4.0 3.0 = 1.0]}
 
     Alternatively the operator can be used:
 
-    {[Float.(4.0 - 3.0) = 1.0]}    
+    {[Float.(4.0 - 3.0) = 1.0]}
   *)
 
   val ( - ) : t -> t -> t
   (** See {!Float.subtract} *)
 
   val multiply : t -> t -> t
-  (** Multiply numbers like 
+  (** Multiply numbers like
 
-    {[Float.multiply 2.0 7.0 = 14.0]} 
+    {[Float.multiply 2.0 7.0 = 14.0]}
 
     Alternatively the operator can be used:
 
-    {[Float.(2.0 * 7.0) = 14.0]}     
+    {[Float.(2.0 * 7.0) = 14.0]}
   *)
 
   val ( * ) : t -> t -> t
@@ -2522,7 +2522,7 @@ module Float : sig
   val divide : t -> t -> t
   (** Floating-point division:
 
-    {[Float.divide 3.14 2.0 = 1.57]} 
+    {[Float.divide 3.14 2.0 = 1.57]}
 
     Alternatively the operator can be used:
 
@@ -2532,7 +2532,7 @@ module Float : sig
   (** See {!Float.divide} *)
 
   val power : t -> t -> t
-  (** Exponentiation, takes the base first, then the exponent. 
+  (** Exponentiation, takes the base first, then the exponent.
 
     {[Float.power 7.0 3.0 = 343.0]}
 
@@ -2551,7 +2551,7 @@ module Float : sig
 
     {[Float.negate (-7) = 7]}
 
-    {[Float.negate 0 = 0]} 
+    {[Float.negate 0 = 0]}
 
     Alternatively an operator is available:
 
@@ -2564,18 +2564,55 @@ module Float : sig
   val absolute : t -> t
   (** Get the {{: https://en.wikipedia.org/wiki/Absolute_value } absolute value} of a number.
 
-    {[Float.absolute 8. = 8.]} 
+    {[Float.absolute 8. = 8.]}
 
-    {[Float.absolute (-7) = 7]} 
+    {[Float.absolute (-7) = 7]}
 
-    {[Float.absolute 0 = 0]} 
+    {[Float.absolute 0 = 0]}
+  *)
+
+  val modulo : t -> by:t -> t
+  (** TODO Perform {{: https://en.wikipedia.org/wiki/Modular_arithmetic } modular arithmetic } on the integer portion of a {!Float}.
+
+    {[Float.modulo ~by:2 0 = 0]}
+
+    {[Float.modulo ~by:2 1 = 1]}
+
+    {[Float.modulo ~by:2 2 = 0]}
+
+    {[Float.modulo ~by:2 3 = 1]}
+
+    It returns {!Float.nan} if [by] is [0].
+
+    {[Float.(modulo ~by:0 3 = nan)]}
+
+    Our [modulo] function works in the typical mathematical way when you run into negative numbers:
+
+    {[
+      List.map ~f:(Float.modulo ~by:4) [(-5); (-4); -3; -2; -1;  0;  1;  2;  3;  4;  5 ] =
+        [3; 0; 1; 2; 3; 0; 1; 2; 3; 0; 1]
+    ]}
+
+    See {!Float.remainder} for a different treatment of negative numbers
+  *)
+
+  val remainder : t -> by:t -> t
+  (** Get the remainder after division. Here are bunch of examples of dividing by four:
+
+    {[
+      List.map ~f:(Int.remainder ~by:4) [(-5); (-4); (-3); (-2); (-1); 0; 1; 2; 3; 4; 5] =
+        [(-1); 0; (-3); (-2); (-1); 0; 1; 2; 3; 0; 1]
+    ]}
+
+
+    Use {!Int.modulo} for a different treatment of negative numbers.
   *)
 
   (** {1 Fancier math} *)
 
   val squareRoot : t -> t
   (** Take the square root of a number.
-    {[Float.squareRoot 4.0 = 9.0]}
+    {[Float.squareRoot 4.0 = 2.0]}
 
     {[Float.squareRoot 9.0 = 3.0]}
 
@@ -2589,11 +2626,11 @@ module Float : sig
 
     {[Float.log ~base:10. 100. = 2.]}
 
-    {[Float.log ~base:2. 256. = 8.]} 
+    {[Float.log ~base:2. 256. = 8.]}
   *)
 
   val clamp : t -> lower:t -> upper:t -> t
-  (** Clamps [n] within the inclusive [lower] and [upper] bounds. 
+  (** Clamps [n] within the inclusive [lower] and [upper] bounds.
 
     {[Float.clamp ~lower:0. ~upper:8. 5. = 5.]}
 
@@ -2606,7 +2643,7 @@ module Float : sig
   (** {1 Checks} *)
 
   val isNaN : t -> bool
-  (** Determine whether a float is an undefined or unrepresentable number.    
+  (** Determine whether a float is an undefined or unrepresentable number.
 
     {[Float.isNaN (0.0 / 0.0) = true]}
 
@@ -2618,6 +2655,26 @@ module Float : sig
   *)
 
   val is_nan : t -> bool
+
+  val isFinite : t -> bool
+  (** Determine whether a float is finite number. True for any float except [Infinity], [-Infinity] or [NaN]
+
+    {[Float.isFinite (0. / 0.) = false]}
+
+    {[Float.(isFinite (squareRoot (-1.)) = false]}
+
+    {[Float.isFinite (1. / 0.) = false]}
+
+    {[Float.isFinite 1. = true]}
+
+    {[Float.(isFinite nan) = false]}
+
+    Notice that [NaN] is not finite!
+
+    For a [float] [n] to be finite implies that [Float.(not (isInfinite n || isNaN n))] evaluates to [true].
+  *)
+
+  val is_finite : t -> bool
 
   val isInfinite : t -> bool
   (** Determine whether a float is positive or negative infinity.
@@ -2632,7 +2689,7 @@ module Float : sig
 
     {[Float.(isInfinite nan) = false]}
 
-    Notice that [NaN] is not infinite! 
+    Notice that [NaN] is not infinite!
 
     For a [float] [n] to be finite implies that [Float.(not (isInfinite n || isNaN n))] evaluates to [true].
   *)
@@ -2649,41 +2706,53 @@ module Float : sig
   val minimum : t -> t -> t
   (** Returns the smaller of two [float]s, if both arguments are equal, returns the first argument
 
-    {[Float.minimum 7.0 9.0 = 7.0]} 
+    {[Float.minimum 7.0 9.0 = 7.0]}
 
     {[Float.minimum (-4.0) (-1.0) = (-4.0)]} *)
 
   val inRange : t -> lower:t -> upper:t -> bool
-  (** Checks if [n] is between [lower] and up to, but not including, [upper]. 
-    If [lower] is not specified, it's set to to [0.0]. 
-    
+  (** Checks if [n] is between [lower] and up to, but not including, [upper].
+    If [lower] is not specified, it's set to to [0.0].
+
     {[Float.inRange ~lower:2. ~upper:4. 3. = true]}
-  
+
     {[Float.inRange ~lower:1. ~upper:2. 2. = false]}
-  
-    {[Float.inRange ~lower:5.2 ~upper:7.9 9.6 = false]}      
+
+    {[Float.inRange ~lower:5.2 ~upper:7.9 9.6 = false]}
   *)
 
   val in_range : t -> lower:t -> upper:t -> bool
 
-  (** {1 Angles} *) 
+  (** {1 Angles} *)
 
   val hypotenuse : t -> t -> t
-  (** [hypotenuse x y] returns the length of the hypotenuse of a right-angled triangle with sides of length [x] and [y], or, equivalently, the distance of the point [(x, y)] to [(0, 0)]. 
+  (** [hypotenuse x y] returns the length of the hypotenuse of a right-angled triangle with sides of length [x] and [y], or, equivalently, the distance of the point [(x, y)] to [(0, 0)].
 
     {[Float.hypotenuse 3. 4. = 5.]}
   *)
 
   val degrees : t -> t
-  (** Converts an angle in {{: https://en.wikipedia.org/wiki/Degree_(angle) } degrees} to {{: https://en.wikipedia.org/wiki/Radian } radians }.
+  (** Converts an angle in {{: https://en.wikipedia.org/wiki/Degree_(angle) } degrees} to {!Float.radians}.
 
-    {[Float.degrees 180. = 3.141592653589793]}
+    {[Float.degrees 180. = v]}
   *)
 
   val radians : t -> t
-  (** Convert radians to {{: https://en.wikipedia.org/wiki/Radian } radians }. 
+  (** Convert a {!Float.t} to {{: https://en.wikipedia.org/wiki/Radian } radians }.
+
+      TODO better description since this function doesn't actually do anything.
 
     {[Float.(radians pi) = 3.141592653589793]}
+  *)
+
+  val turns : t -> t
+  (** Convert an angle in {{: TODO } turns } into {!Float.radians}.
+
+    One turn is equal to 360°.
+
+    {[Float.(turns (1. / 2.)) = pi]}
+
+    {[Float.(turns 1. = degrees 360.)]}
   *)
 
   (** {1 Polar coordinates} *)
@@ -2705,21 +2774,19 @@ module Float : sig
   *)
 
   val to_polar : (float * float) -> (float * float)
-  
+
   val cos : t -> t
   (** Figure out the cosine given an angle in {{: https://en.wikipedia.org/wiki/Radian } radians }.
 
     {[Float.(cos (degrees 60.)) = 0.5000000000000001]}
 
     {[Float.(cos (radians (pi / 3.))) = 0.5000000000000001]}
-
-    {[Float.(cos (pi / 3.)) = 0.5000000000000001]}
   *)
 
   val acos : t -> t
   (** Figure out the arccosine for [adjacent / hypotenuse] in {{: https://en.wikipedia.org/wiki/Radian } radians }:
 
-    {[Float.(acos (radians 1.0 / 2.0)) = Float.radians 1.0471975511965979 (* 60° or pi/3 radians *)]} 
+    {[Float.(acos (radians 1.0 / 2.0)) = Float.radians 1.0471975511965979 (* 60° or pi/3 radians *)]}
   *)
 
   val sin : t -> t
@@ -2728,31 +2795,27 @@ module Float : sig
     {[Float.(sin (degrees 30.)) = 0.49999999999999994]}
 
     {[Float.(sin (radians (pi / 6.)) = 0.49999999999999994]}
-
-    {[Float.(sin (pi / 6.)) = 0.49999999999999994]}
   *)
 
   val asin : t -> t
   (** Figure out the arcsine for [opposite / hypotenuse] in {{: https://en.wikipedia.org/wiki/Radian } radians }:
 
-    {[Float.(asin (1.0 / 2.0)) = 0.5235987755982989 (* 30° or pi / 6 radians *)]} 
+    {[Float.(asin (1.0 / 2.0)) = 0.5235987755982989 (* 30° or pi / 6 radians *)]}
   *)
 
   val tan : t -> t
   (** Figure out the tangent given an angle in radians.
 
     {[Float.(tan (degrees 45.)) = 0.9999999999999999]}
-    
-    {[Float.(tan (turns (1. / 8.)) = 0.9999999999999999]}
 
-    {[Float.(tan (radians (pi / 4)) = 0.9999999999999999]}
+    {[Float.(tan (radians (pi / 4.)) = 0.9999999999999999]}
 
     {[Float.(tan (pi / 4.)) = 0.9999999999999999]}
   *)
 
   val atan : t -> t
   (** This helps you find the angle (in radians) to an [(x, y)] coordinate, but
-    in a way that is rarely useful in programming. 
+    in a way that is rarely useful in programming.
 
     {b You probably want } {!atan2} instead!
 
@@ -2789,24 +2852,24 @@ module Float : sig
   (** {1 Conversion} *)
 
   type direction = [
-    | `Zero 
-    | `AwayFromZero 
-    | `Up 
-    | `Down 
+    | `Zero
+    | `AwayFromZero
+    | `Up
+    | `Down
     | `Closest of [
-      | `Zero 
-      | `AwayFromZero 
-      | `Up 
+      | `Zero
+      | `AwayFromZero
+      | `Up
       | `Down
-      | `ToEven 
+      | `ToEven
     ]
   ]
 
   val round : ?direction:direction -> t ->  t
-  (** Round a number, by default to the to the closest [int] with halves rounded [`Up] (towards positive infinity) 
+  (** Round a number, by default to the to the closest [int] with halves rounded [`Up] (towards positive infinity)
 
     {[
-Float.round 1.2 = 1.0  
+Float.round 1.2 = 1.0
 Float.round 1.5 = 2.0
 Float.round 1.8 = 2.0
 Float.round -1.2 = -1.0
@@ -2814,9 +2877,9 @@ Float.round -1.5 = -1.0
 Float.round -1.8 = -2.0
     ]}
 
-    Other rounding strategies are available by using the optional [~direction] label.    
+    Other rounding strategies are available by using the optional [~direction] label.
 
-    {2 Towards zero}    
+    {2 Towards zero}
 
     {[
 Float.round ~direction:`Zero 1.2 = 1.0
@@ -2877,19 +2940,19 @@ Float.round ~direction:`Up (-1.8) = -1.0
 
     {3 Halves rounded up}
 
-    This is the default. 
+    This is the default.
 
     [Float.round 1.5] is the same as [Float.round ~direction:(`Closest `Up) 1.5]
 
     {3 Halves rounded towards the closest even number}
 
-    This tie-breaking rule is the default rounding mode using in 
+    This tie-breaking rule is the default rounding mode using in
 
     {[Float.round ~direction:(`Closest `ToEven) -1.5 = -2.0]}
 
     {[Float.round ~direction:(`Closest `ToEven) -2.5 = -2.0]}
   *)
-  
+
   val floor : t -> t
   (** Floor function, equivalent to [Float.round ~direction:`Down].
 
@@ -2907,7 +2970,7 @@ Float.round ~direction:`Up (-1.8) = -1.0
   *)
 
   val ceiling : t -> t
-  (** Ceiling function, equivalent to [Float.round ~direction:`Up].    
+  (** Ceiling function, equivalent to [Float.round ~direction:`Up].
 
     {[Float.ceiling 1.2 = 2.0]}
 
@@ -2941,7 +3004,7 @@ Float.round ~direction:`Up (-1.8) = -1.0
   *)
 
   val fromInt : int -> float
-  (** Convert an [int] to a [float] 
+  (** Convert an [int] to a [float]
 
     {[Float.fromInt 5 = 5.0]}
 
@@ -2957,22 +3020,24 @@ Float.round ~direction:`Up (-1.8) = -1.0
 
     Returns [None] when trying to round a [float] which can't be represented as an [int] such as {!Float.nan} or {!Float.infinity} or numbers which are too large or small.
 
-    {[Float.(roundToInt nan) = None]}
+    {[Float.(toInt nan) = None]}
 
-    {[Float.(roundToInt infinity) = None]}    
+    {[Float.(toInt infinity) = None]}
 
     You probably want to use some form of {!Float.round} prior to using this function.
 
-    {[Float.round 1.6 |> Float.toInt = Some 2]}  
+    {[Float.(round 1.6 |> toInt) = Some 2]}
   *)
 
   val to_int : t ->  int option
 
   val fromString : string -> t option
+  (** TODO *)
 
   val from_string : string -> t option
 
   val toString : t -> string
+  (** TODO *)
 
   val to_string : t -> string
 end
@@ -2988,25 +3053,25 @@ module Int : sig
       1_000_000
       0xFF (* 255 in hexadecimal *)
       0x000A (* 10 in hexadecimal *)
-    ]}    
+    ]}
 
-    {b Note:} The number of bits used for an [int] is platform dependent. 
+    {b Note:} The number of bits used for an [int] is platform dependent.
 
-    When targeting native OCaml uses 31-bits on a 32-bit platforms and 63-bits on a 64-bit platforms 
+    When targeting native OCaml uses 31-bits on a 32-bit platforms and 63-bits on a 64-bit platforms
     which means that [int] math is well-defined in the range [-2 ** 30] to [2 ** 30 - 1] for 32bit platforms [-2 ** 62] to [2 ** 62 - 1] for 64bit platforms.
 
     You can read about the reasons for OCamls unusual integer sizes {{: https://v1.realworldocaml.org/v1/en/html/memory-representation-of-values.html} here }.
 
-    When targeting JavaScript, that range is [-2 ** 53] to [2 ** 53 - 1]. 
-    
-    Outside of that range, the behavior is determined by the compilation target. 
+    When targeting JavaScript, that range is [-2 ** 53] to [2 ** 53 - 1].
+
+    Outside of that range, the behavior is determined by the compilation target.
 
     When targeting native [int]s are subject to {{: https://en.wikipedia.org/wiki/Integer_overflow } overflow }, meaning that [Int.maximumValue + 1 = Int.minimumValue].
-    
+
     This quirk is necessary to get good performance on quirky compilation targets.
 
     {e Historical Note: } The name [int] comes from the term {{: https://en.wikipedia.org/wiki/Integer } integer}). It appears
-    that the [int] abbreviation was introduced in the programming language ALGOL 68. 
+    that the [int] abbreviation was introduced in the programming language ALGOL 68.
 
     Today, almost all programming languages use this abbreviation.
   *)
@@ -3036,7 +3101,7 @@ module Int : sig
   *)
 
   val add : t -> t -> t
-  (** Add two {!Int} numbers. 
+  (** Add two {!Int} numbers.
 
     {[Int.add 3002 4004 = 7006]}
 
@@ -3044,7 +3109,7 @@ module Int : sig
 
     {[3002 + 4004 = 7006]}
 
-    You {e cannot } add an [int] and a [float] directly though. 
+    You {e cannot } add an [int] and a [float] directly though.
 
     See {!Float.add} for why, and how to overcome this limitation.
   *)
@@ -3053,25 +3118,25 @@ module Int : sig
   (** See {!Int.add} *)
 
   val subtract : t -> t -> t
-  (** Subtract numbers 
+  (** Subtract numbers
     {[Int.subtract 4 3 = 1]}
 
     Alternatively the operator can be used:
 
     {[4 - 3 = 1]}
-  *)      
+  *)
 
   val ( - ) : t -> t -> t
   (** See {!Int.subtract} *)
 
   val multiply : t -> t -> t
-  (** Multiply [int]s like 
+  (** Multiply [int]s like
 
-    {[Int.multiply 2 7 = 14]} 
+    {[Int.multiply 2 7 = 14]}
 
     Alternatively the operator can be used:
 
-    {[(2 * 7) = 14]}     
+    {[(2 * 7) = 14]}
   *)
 
   val ( * ) : t -> t -> t
@@ -3090,7 +3155,7 @@ module Int : sig
   (** See {!Int.divide} *)
 
   val ( // ) : t -> t -> float
-  (** Floating point division 
+  (** Floating point division
     {[3 // 2 = 1.5]}
 
     {[27 // 5 = 5.25]}
@@ -3099,7 +3164,7 @@ module Int : sig
   *)
 
   val power : t -> t -> t
-  (** Exponentiation, takes the base first, then the exponent. 
+  (** Exponentiation, takes the base first, then the exponent.
 
     {[Int.power 7 3 = 343]}
 
@@ -3118,7 +3183,7 @@ module Int : sig
 
     {[Int.negate (-7) = 7]}
 
-    {[Int.negate 0 = 0]} 
+    {[Int.negate 0 = 0]}
 
     Alternatively the operator can be used:
 
@@ -3127,17 +3192,17 @@ module Int : sig
 
   val (~-) : t -> t
   (** See {!Int.negate} *)
-  
+
   val absolute : t -> t
   (** Get the {{: https://en.wikipedia.org/wiki/Absolute_value } absolute value } of a number.
 
-    {[Int.absolute 8 = 8]} 
+    {[Int.absolute 8 = 8]}
 
-    {[Int.absolute (-7) = 7]} 
+    {[Int.absolute (-7) = 7]}
 
     {[Int.absolute 0 = 0]} *)
 
-  val modulo : t -> by:int -> t
+  val modulo : t -> by:t -> t
   (** Perform {{: https://en.wikipedia.org/wiki/Modular_arithmetic } modular arithmetic }.
 
     If you intend to use [modulo] to detect even and odd numbers consider using {!Int.isEven} or {!Int.isOdd}.
@@ -3160,20 +3225,20 @@ module Int : sig
     Use {!Int.remainder} for a different treatment of negative numbers.
   *)
 
-  val remainder : t -> by:int -> t
+  val remainder : t -> by:t -> t
   (** Get the remainder after division. Here are bunch of examples of dividing by four:
 
     {[
-      List.map ~f:(Int.remainder ~by:4) [(-5); (-4); (-3); (-2); (-1); 0; 1; 2; 3; 4; 5] =    
+      List.map ~f:(Int.remainder ~by:4) [(-5); (-4); (-3); (-2); (-1); 0; 1; 2; 3; 4; 5] =
         [(-1); 0; (-3); (-2); (-1); 0; 1; 2; 3; 0; 1]
     ]}
-    
 
-    Use {!Int.modulo} for a different treatment of negative numbers.    
+
+    Use {!Int.modulo} for a different treatment of negative numbers.
   *)
 
   val maximum : t -> t -> t
-  (** Returns the larger of two [int]s 
+  (** Returns the larger of two [int]s
 
     {[Int.maximum 7 9 = 9]}
 
@@ -3182,7 +3247,7 @@ module Int : sig
   val minimum : t -> t -> t
   (** Returns the smaller of two [int]s
 
-    {[Int.minimum 7 9 = 7]} 
+    {[Int.minimum 7 9 = 7]}
 
     {[Int.minimum (-4) (-1) = (-4)]} *)
 
@@ -3208,8 +3273,8 @@ module Int : sig
 
   val is_odd : t -> bool
 
-  val clamp : t -> lower:int -> upper:int -> t
-  (** Clamps [n] within the inclusive [lower] and [upper] bounds. 
+  val clamp : t -> lower:t -> upper:t -> t
+  (** Clamps [n] within the inclusive [lower] and [upper] bounds.
 
     {[Int.clamp ~lower:0 ~upper:8 5 = 5]}
 
@@ -3219,12 +3284,12 @@ module Int : sig
   *)
 
   val inRange : t -> lower:t -> upper:t -> bool
-  (** Checks if [n] is between [lower] and up to, but not including, [upper].     
-    
+  (** Checks if [n] is between [lower] and up to, but not including, [upper].
+
     {[Int.inRange ~lower:2 ~upper:4 3 = true]}
 
     {[Int.inRange ~lower:5 ~upper:8 4 = false]}
-  
+
     {[Int.inRange ~lower:(-6) ~upper:(-2) (-3) = true]}
   *)
 
@@ -3240,19 +3305,21 @@ let halfOf (number : int) : float =
   Float.((Int.toFloat number) / 2)
 
 halfOf 7 = 3.5
-    ]} 
+    ]}
     Note that locally opening the {!Float} module here allows us to use the floating point division operator
   *)
 
   val to_float : t -> float
 
-  val toString : t -> string  
+  val toString : t -> string
+  (** TODO *)
 
   val to_string : t -> string
 
   val fromString : string -> t option
+  (** TODO *)
 
-  val from_string : string -> t option  
+  val from_string : string -> t option
 end
 
 module Tuple2 : sig

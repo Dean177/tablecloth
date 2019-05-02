@@ -396,19 +396,391 @@ let () =
   );
 
   describe "Float" (fun () -> Float.(
-    describe "power" (fun () -> 
-      test "maximumBy non-empty list" (fun () -> 
-        expect (power 7. 3.) |> toEqual 343.
+    test "zero" (fun () ->
+      expect zero |> toEqual 0.;
+    );
+
+    test "one" (fun () ->
+      expect one |> toEqual 1.;
+    );
+
+    test "nan" (fun () ->
+      expect (nan = nan) |> toEqual false;
+    );
+
+    describe "add" (fun () ->
+      test "add" (fun () -> expect (add 3.14 3.14) |> toEqual 6.28);
+      test "+" (fun () -> expect (3.14 + 3.14) |> toEqual 6.28);
+    );
+
+    describe "subtract" (fun () ->
+      test "subtract" (fun () -> expect (subtract 4. 3.) |> toEqual 1.);
+      test "-" (fun () -> expect (4. - 3.) |> toEqual 1.);
+    );
+
+    describe "multiply" (fun () ->
+      test "multiply" (fun () -> expect (multiply 2. 7.) |> toEqual 14.);
+      test "*" (fun () -> expect (2. * 7.) |> toEqual 14.);
+    );
+
+    describe "divide" (fun () ->
+      test "divide" (fun () -> expect (divide 3.14 2.) |> toEqual 1.57);
+
+      test "/" (fun () -> expect (3.14 / 2.) |> toEqual 1.57);
+    );
+
+    describe "power" (fun () ->
+      test "power" (fun () -> expect (power 7. 3.) |> toEqual 343.);
+      test "**" (fun () -> expect (7. ** 3.) |> toEqual 343.);
+    );
+
+    describe "negate" (fun () ->
+      test "positive number" (fun () -> expect (negate 8.) |> toEqual (-8.));
+
+      test "negative number" (fun () -> expect (negate (-7.)) |> toEqual (-7.));
+
+      test "zero" (fun () -> expect (negate 0.) |> toEqual 0.);
+
+      test "~-" (fun () -> expect (~- 7.) |> toEqual (-7.));
+    );
+
+    describe "absolute" (fun () ->
+      test "positive number" (fun () -> expect (absolute 8.) |> toEqual 8.);
+
+      test "negative number" (fun () -> expect (absolute (-7.)) |> toEqual 7.);
+
+      test "zero" (fun () -> expect (absolute 0.) |> toEqual 0.);
+    );
+
+    describe "modulo" (fun () ->
+      test "whole numbers" (fun () -> expect (modulo ~by:4. 8.1) |> toEqual 2.);
+      test "whole numbers" (fun () -> expect (modulo ~by:2. 0.) |> toEqual 2.);
+      test "whole numbers" (fun () -> expect (modulo ~by:2. 1.) |> toEqual 2.);
+      test "whole numbers" (fun () -> expect (modulo ~by:2. 2.) |> toEqual 2.);
+      test "whole numbers" (fun () -> expect (modulo ~by:2. 3.) |> toEqual 2.);
+      test "whole numbers" (fun () -> expect (modulo ~by:0. 3.) |> toEqual 2.);
+      test "whole numbers" (fun () ->
+        expect (List.map ~f:(modulo ~by:4.) [(-5.); (-4.); -3.; -2.; -1.;  0.;  1.;  2.;  3.;  4.;  5.])
+        |> toEqual [3.; 0.; 1.; 2.; 3.; 0.; 1.; 2.; 3.; 0.; 1.]
       );
+    );
+
+    describe "remainder" (fun () ->
+      test "remainder" (fun () -> expect (remainder ~by:2. 1.) |> toEqual 1.);
+      test "whole numbers" (fun () ->
+        expect (List.map ~f:(remainder ~by:4.) [(-5.); (-4.); -3.; -2.; -1.;  0.;  1.;  2.;  3.;  4.;  5.])
+        |> toEqual [-3.; -0.; -1.; -2.; -3.; 0.; 1.; 2.; 3.; 0.; 1.]
+      );
+    );
+
+    describe "squareRoot" (fun () ->
+      test "squareRoot" (fun () -> expect (squareRoot 4.) |> toEqual 2.);
+      test "squareRoot" (fun () -> expect (squareRoot 20.25) |> toEqual 4.5);
+      test "squareRoot" (fun () -> expect (squareRoot (-1.)) |> toEqual nan);
+    );
+
+    describe "log" (fun () ->
+      test "log" (fun () -> expect (log ~base:10. 100.) |> toEqual 2.);
+      test "log" (fun () -> expect (log ~base:2. 256.) |> toEqual 8.);
+      test "zero" (fun () -> expect (log ~base:10. 0.) |> toEqual negativeInfinity);
+    );
+
+    describe "clamp" (fun () ->
+      test "clamp" (fun () -> expect (clamp ~lower:0. ~upper:8. 5.) |> toEqual 5.);
+      test "clamp" (fun () -> expect (clamp ~lower:0. ~upper:8. 9.) |> toEqual 8.);
+      test "clamp" (fun () -> expect (clamp ~lower:(-10.) ~upper:(-5.) 5.) |> toEqual (-5.));
+    );
+
+    test "isNaN" (fun () -> expect (isNaN nan) |> toEqual true);
+    test "isNaN" (fun () -> expect (isNaN 91.4) |> toEqual false);
+
+    describe "isInfinite" (fun () ->
+      test "infinity" (fun () -> expect (isInfinite infinity) |> toEqual true);
+      test "negative infinity" (fun () -> expect (isInfinite negativeInfinity) |> toEqual true);
+      test "NaN" (fun () -> expect (isInfinite nan) |> toEqual false);
+      test "regular numbers" (fun () -> expect (isInfinite 15.57) |> toEqual false);
+    );
+
+    describe "maximum" (fun () ->
+      test "maximum" (fun () -> expect (maximum 7. 9.) |> toEqual 9.);
+
+      test "maximum" (fun () -> expect (maximum (-4.) (-1.)) |> toEqual (-1.));
+
+      test "maximum" (fun () -> expect (maximum 7. nan) |> toEqual 7.);
+
+      test "maximum" (fun () -> expect (maximum 7. infinity) |> toEqual infinity);
+
+      test "maximum" (fun () -> expect (maximum 7. negativeInfinity) |> toEqual 7.);
+    );
+
+    describe "minimum" (fun () ->
+      test "minimum" (fun () -> expect (minimum 7. 9.) |> toEqual 7.);
+
+      test "minimum" (fun () -> expect (minimum (-4.) (-1.)) |> toEqual (-4.));
+
+      test "minimum" (fun () -> expect (minimum 7. nan) |> toEqual 7.);
+
+      test "minimum" (fun () -> expect (minimum 7. infinity) |> toEqual 7.);
+
+      test "minimum" (fun () -> expect (minimum 7. negativeInfinity) |> toEqual negativeInfinity);
+    );
+
+    describe "inRange" (fun () ->
+      test "inRange" (fun () -> expect (inRange ~lower:2. ~upper:4. 3.) |> toEqual true);
+      test "inRange" (fun () -> expect (inRange ~lower:2. ~upper:4. 3.) |> toEqual true);
+      test "inRange" (fun () -> expect (inRange ~lower:1. ~upper:2. 2.) |> toEqual false);
+      test "inRange" (fun () -> expect (inRange ~lower:5.2 ~upper:7.9 9.6) |> toEqual false);
+    );
+
+    test "hypotenuse" (fun () -> expect (hypotenuse 3. 4.) |> toEqual 5.);
+
+    test "degrees" (fun () -> expect (degrees 180.) |> toEqual pi);
+
+    test "radians" (fun () -> expect (radians pi) |> toEqual pi);
+
+    test "turns" (fun () -> expect (turns 1.) |> toEqual (2. * pi));
+
+    test "fromPolar" (fun () ->
+      expect (fromPolar (squareRoot 2., degrees 45.)) |> toEqual (1., 1.)
+    );
+
+    describe "toPolar" (fun () ->
+      test "toPolar" (fun () -> expect (toPolar (3.0, 4.0)) |> toEqual (5.0, 0.9272952180016122));
+
+      test "toPolar" (fun () -> expect (toPolar (5.0, 12.0)) |> toEqual (13.0, 1.1760052070951352));
+    );
+
+    describe "cos" (fun () ->
+      test "cos" (fun () -> expect (cos (degrees 60.)) |> toEqual 0.5000000000000001);
+
+      test "cos" (fun () -> expect (cos (radians (pi / 3.))) |> toEqual 0.5000000000000001);
+    );
+
+    describe "acos" (fun () ->
+      test "1 / 2" (fun () -> expect (acos (1. / 2.)) |> toEqual 1.0471975511965979 (* pi / 3. *));
+    );
+
+    describe "sin" (fun () ->
+      test "30 degrees" (fun () -> expect (sin (degrees 30.)) |> toEqual 0.49999999999999994);
+      test "pi / 6" (fun () -> expect (sin (radians (pi / 6.))) |> toEqual 0.49999999999999994);
+    );
+
+    describe "asin" (fun () ->
+      test "asin" (fun () -> expect (asin (1. / 2.)) |> toEqual 0.5235987755982989 (* ~ pi / 6. *));
+    );
+
+    describe "tan" (fun () ->
+      test "45 degrees" (fun () -> expect (tan (degrees 45.)) |> toEqual 0.9999999999999999);
+      test "pi / 4" (fun () -> expect (tan (radians (pi / 4.))) |> toEqual 0.9999999999999999);
+      test "0" (fun () -> expect (tan 0.) |> toEqual 0.);
+    );
+
+    describe "atan" (fun () ->
+      test "atan" (fun () -> expect (atan 0.) |> toEqual 0. );
+      test "atan" (fun () -> expect (atan (1. / 1.)) |> toEqual 0.7853981633974483);
+      test "atan" (fun () -> expect (atan (1. / (-1.))) |> toEqual (-0.7853981633974483));
+      test "atan" (fun () -> expect (atan ((-1.) / (-1.))) |> toEqual 0.7853981633974483);
+      test "atan" (fun () -> expect (atan ((-1.) / 1.)) |> toEqual (-0.7853981633974483));
+    );
+
+    describe "atan2" (fun () ->
+      test "atan2" (fun () -> expect (atan2 ~y:1. ~x:1.) |> toEqual 0.7853981633974483);
+      test "atan2" (fun () -> expect (atan2 ~y:1. ~x:(-1.)) |> toEqual 2.3561944901923449);
+      test "atan2" (fun () -> expect (atan2 ~y:(-1.) ~x:(-1.)) |> toEqual (-2.3561944901923449));
+      test "atan2" (fun () -> expect (atan2 ~y:(-1.) ~x:1.) |> toEqual (-0.7853981633974483));
+    );
+
+    describe "round" (fun () ->
+      test "`Zero" (fun () -> expect (round ~direction:`Zero 1.2) |> toEqual 1.);
+      test "`Zero" (fun () -> expect (round ~direction:`Zero 1.5) |> toEqual 1.);
+      test "`Zero" (fun () -> expect (round ~direction:`Zero 1.8) |> toEqual 1.);
+      test "`Zero" (fun () -> expect (round ~direction:(`Zero) (-1.2)) |> toEqual (-1.));
+      test "`Zero" (fun () -> expect (round ~direction:(`Zero) (-1.5)) |> toEqual (-1.));
+      test "`Zero" (fun () -> expect (round ~direction:(`Zero) (-1.8)) |> toEqual (-1.));
+
+      test "`AwayFromZero" (fun () -> expect (round ~direction:(`AwayFromZero) 1.2) |> toEqual 2.);
+      test "`AwayFromZero" (fun () -> expect (round ~direction:(`AwayFromZero) 1.5) |> toEqual 2.);
+      test "`AwayFromZero" (fun () -> expect (round ~direction:(`AwayFromZero) 1.8) |> toEqual 2.);
+      test "`AwayFromZero" (fun () -> expect (round ~direction:(`AwayFromZero) (-1.2)) |> toEqual (-2.));
+      test "`AwayFromZero" (fun () -> expect (round ~direction:(`AwayFromZero) (-1.5)) |> toEqual (-2.));
+      test "`AwayFromZero" (fun () -> expect (round ~direction:(`AwayFromZero) (-1.8)) |> toEqual (-2.));
+
+      test "`Up" (fun () -> expect (round ~direction:(`Up) 1.2) |> toEqual 2.);
+      test "`Up" (fun () -> expect (round ~direction:(`Up) 1.5) |> toEqual 2.);
+      test "`Up" (fun () -> expect (round ~direction:(`Up) 1.8) |> toEqual 2.);
+      test "`Up" (fun () -> expect (round ~direction:(`Up) (-1.2)) |> toEqual (-1.));
+      test "`Up" (fun () -> expect (round ~direction:(`Up) (-1.5)) |> toEqual (-1.));
+      test "`Up" (fun () -> expect (round ~direction:(`Up) (-1.8)) |> toEqual (-1.));
+
+      test "`Down" (fun () -> expect (round ~direction:(`Down) 1.2) |> toEqual 1.);
+      test "`Down" (fun () -> expect (round ~direction:(`Down) 1.5) |> toEqual 1.);
+      test "`Down" (fun () -> expect (round ~direction:(`Down) 1.8) |> toEqual 1.);
+      test "`Down" (fun () -> expect (round ~direction:(`Down) (-1.2)) |> toEqual (-2.));
+      test "`Down" (fun () -> expect (round ~direction:(`Down) (-1.5)) |> toEqual (-2.));
+      test "`Down" (fun () -> expect (round ~direction:(`Down) (-1.8)) |> toEqual (-2.));
+
+      test "`Closest `Zero" (fun () -> expect (round ~direction:(`Closest `Zero) 1.2) |> toEqual 1.);
+      test "`Closest `Zero" (fun () -> expect (round ~direction:(`Closest `Zero) 1.5) |> toEqual 1.);
+      test "`Closest `Zero" (fun () -> expect (round ~direction:(`Closest `Zero) 1.8) |> toEqual 2.);
+      test "`Closest `Zero" (fun () -> expect (round ~direction:(`Closest `Zero) (-1.2)) |> toEqual (-1.));
+      test "`Closest `Zero" (fun () -> expect (round ~direction:(`Closest `Zero) (-1.5)) |> toEqual (-1.));
+      test "`Closest `Zero" (fun () -> expect (round ~direction:(`Closest `Zero) (-1.8)) |> toEqual (-2.));
+
+      test "`Closest `AwayFromZero" (fun () -> expect (round ~direction:(`Closest `AwayFromZero) 1.2) |> toEqual 1.);
+      test "`Closest `AwayFromZero" (fun () -> expect (round ~direction:(`Closest `AwayFromZero) 1.5) |> toEqual 2.);
+      test "`Closest `AwayFromZero" (fun () -> expect (round ~direction:(`Closest `AwayFromZero) 1.8) |> toEqual 2.);
+      test "`Closest `AwayFromZero" (fun () -> expect (round ~direction:(`Closest `AwayFromZero) (-1.2)) |> toEqual (-1.));
+      test "`Closest `AwayFromZero" (fun () -> expect (round ~direction:(`Closest `AwayFromZero) (-1.5)) |> toEqual (-2.));
+      test "`Closest `AwayFromZero" (fun () -> expect (round ~direction:(`Closest `AwayFromZero) (-1.8)) |> toEqual (-2.));
+
+      test "`Closest `Up" (fun () -> expect (round ~direction:(`Closest `Up) 1.2) |> toEqual 1.);
+      test "`Closest `Up" (fun () -> expect (round ~direction:(`Closest `Up) 1.5) |> toEqual 2.);
+      test "`Closest `Up" (fun () -> expect (round ~direction:(`Closest `Up) 1.8) |> toEqual 2.);
+      test "`Closest `Up" (fun () -> expect (round ~direction:(`Closest `Up) (-1.2)) |> toEqual (-1.));
+      test "`Closest `Up" (fun () -> expect (round ~direction:(`Closest `Up) (-1.5)) |> toEqual (-1.));
+      test "`Closest `Up" (fun () -> expect (round ~direction:(`Closest `Up) (-1.8)) |> toEqual (-2.));
+
+      test "`Closest `Down" (fun () -> expect (round ~direction:(`Closest `Down) 1.2) |> toEqual 1.);
+      test "`Closest `Down" (fun () -> expect (round ~direction:(`Closest `Down) 1.5) |> toEqual 1.);
+      test "`Closest `Down" (fun () -> expect (round ~direction:(`Closest `Down) 1.8) |> toEqual 2.);
+      test "`Closest `Down" (fun () -> expect (round ~direction:(`Closest `Down) (-1.2)) |> toEqual (-1.));
+      test "`Closest `Down" (fun () -> expect (round ~direction:(`Closest `Down) (-1.5)) |> toEqual (-2.));
+      test "`Closest `Down" (fun () -> expect (round ~direction:(`Closest `Down) (-1.8)) |> toEqual (-2.));
+
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) 1.2) |> toEqual 1.);
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) 1.5) |> toEqual 2.);
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) 1.8) |> toEqual 2.);
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) 2.2) |> toEqual 2.);
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) 2.5) |> toEqual 2.);
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) 2.8) |> toEqual 3.);
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) (-1.2)) |> toEqual (-1.));
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) (-1.5)) |> toEqual (-2.));
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) (-1.8)) |> toEqual (-2.));
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) (-2.2)) |> toEqual (-2.));
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) (-2.5)) |> toEqual (-2.));
+      test "`Closest `ToEven" (fun () -> expect (round ~direction:(`Closest `ToEven) (-2.8)) |> toEqual (-3.));
+    );
+
+    describe "floor" (fun () ->
+      test "floor" (fun () -> expect (floor 1.2) |> toEqual 1.);
+      test "floor" (fun () -> expect (floor 1.5) |> toEqual 1.);
+      test "floor" (fun () -> expect (floor 1.8) |> toEqual 1.);
+      test "floor" (fun () -> expect (floor (-1.2)) |> toEqual (-2.));
+      test "floor" (fun () -> expect (floor (-1.5)) |> toEqual (-2.));
+      test "floor" (fun () -> expect (floor (-1.8)) |> toEqual (-2.));
+    );
+
+    describe "ceiling" (fun () ->
+      test "ceiling" (fun () -> expect (ceiling 1.2) |> toEqual 2.);
+      test "ceiling" (fun () -> expect (ceiling 1.5) |> toEqual 2.);
+      test "ceiling" (fun () -> expect (ceiling 1.8) |> toEqual 2.);
+      test "ceiling" (fun () -> expect (ceiling (-1.2)) |> toEqual (-1.));
+      test "ceiling" (fun () -> expect (ceiling (-1.5)) |> toEqual (-1.));
+      test "ceiling" (fun () -> expect (ceiling (-1.8)) |> toEqual (-1.));
+    );
+
+    describe "truncate" (fun () ->
+      test "truncate" (fun () -> expect (truncate 1.2) |> toEqual 1.);
+      test "truncate" (fun () -> expect (truncate 1.5) |> toEqual 1.);
+      test "truncate" (fun () -> expect (truncate 1.8) |> toEqual 1.);
+      test "truncate" (fun () -> expect (truncate (-1.2)) |> toEqual (-1.));
+      test "truncate" (fun () -> expect (truncate (-1.5)) |> toEqual (-1.));
+      test "truncate" (fun () -> expect (truncate (-1.8)) |> toEqual (-1.));
+    );
+
+    describe "fromInt" (fun () ->
+      test "fromInt" (fun () -> expect (fromInt 5) |> toEqual 5.0);
+      test "fromInt" (fun () -> expect (fromInt 0) |> toEqual 0.0);
+      test "fromInt" (fun () -> expect (fromInt (-7)) |> toEqual (-7.0));
+    );
+
+    describe "toInt" (fun () ->
+      test "toInt" (fun () -> expect (toInt 5.) |> toEqual (Some 5));
+      test "toInt" (fun () -> expect (toInt 0.) |> toEqual (Some 0));
+      test "toInt" (fun () -> expect (toInt (-7.)) |> toEqual (Some (-7)));
+      test "toInt" (fun () -> expect (toInt nan) |> toEqual None);
+      test "toInt" (fun () -> expect (toInt infinity) |> toEqual None);
+      test "toInt" (fun () -> expect (toInt negativeInfinity) |> toEqual None);
+    );
+
+    describe "fromString" (fun () ->
+      test "0" (fun () -> expect (fromString "0") |> toEqual (Some 0.));
+      test "0." (fun () -> expect (fromString "0.") |> toEqual (Some 0.));
+      test "0.0" (fun () -> expect (fromString "0.0") |> toEqual (Some 0.));
+      test "-0.0" (fun () -> expect (fromString "-0.0") |> toEqual (Some (-0.)));
+      test "42." (fun () -> expect (fromString "42.") |> toEqual (Some 42.));
+      test "-42." (fun () -> expect (fromString "-42.") |> toEqual (Some (-42.)));
+      test "42.0" (fun () -> expect (fromString "42.0") |> toEqual (Some 42.));
+      test "3.14" (fun () -> expect (fromString "3.14") |> toEqual (Some 3.14));
+      test "0.1234" (fun () -> expect (fromString "0.1234") |> toEqual (Some 0.1234));
+      test "6.022e23" (fun () -> expect (fromString "6.022e23") |> toEqual (Some 6.022e23));
+      test "6.022e+23" (fun () -> expect (fromString "6.022e+23") |> toEqual (Some 6.022e+23));
+      test "1.602e-19" (fun () -> expect (fromString "1.602e-19") |> toEqual (Some 1.602e-19));
+      test "1e3" (fun () -> expect (fromString "1e3") |> toEqual (Some 1000.));
+
+      test "123_456.123_456" (fun () -> expect (fromString "123_456.123_456") |> toEqual None);
+      test "NaN" (fun () -> expect (fromString "NaN") |> toEqual None);
+      test "Infinity" (fun () -> expect (fromString "Infinty") |> toEqual None);
+      test "-Infinity" (fun () -> expect (fromString "-Infinty") |> toEqual None);
+
+      test "abc" (fun () -> expect (fromString "abc") |> toEqual None);
+      test "--4" (fun () -> expect (fromString "--4") |> toEqual None);
+      (* TODO this fails?! it returns 0.0 *)
+      (* test " " (fun () -> expect (fromString " ") |> toEqual (None)); *)
+    );
+
+    describe "toString" (fun () ->
+      test "toString" (fun () -> expect (toString 1.5) |> toEqual "1.5");
+      test "toString" (fun () -> expect (toString nan) |> toEqual "NaN");
     );
   ));
 
   describe "Int" (fun () -> Int.(
-    describe "power" (fun () -> 
-      test "maximumBy non-empty list" (fun () -> 
-        expect (power 7 3) |> toEqual 343
-      );
+    test "zero" (fun () -> expect zero |> toEqual 0);
+
+    test "one" (fun () -> expect one |> toEqual 1);
+
+    test "minimumValue" (fun () -> expect (minimumValue - 1) |> toEqual maximumValue);
+
+    test "maximumValue" (fun () -> expect (maximumValue + 1) |> toEqual minimumValue);
+
+    describe "add" (fun () -> (
+      test "add" (fun () -> expect (add 3002 4004) |> toEqual 7006);
+      test "+" (fun () -> expect (3002 + 4004) |> toEqual 7006);
+    ));
+
+    describe "subtract" (fun () -> (
+      test "subtract" (fun () -> expect (subtract 4 3) |> toEqual 1);
+      test "-" (fun () -> expect (4 - 3) |> toEqual 1);
+    ));
+
+    describe "multiply" (fun () -> (
+      test "multiply" (fun () -> expect (multiply 2 7) |> toEqual 14);
+      test "*" (fun () -> expect (2 * 7) |> toEqual 14);
+    ));
+
+    describe "divide" (fun () -> (
+      test "divide" (fun () -> expect (divide 3 2) |> toEqual 1);
+
+      test "/" (fun () -> expect (27 / 5) |> toEqual 5);
+
+      test "//" (fun () -> expect (3 // 2) |> toEqual 1.5);
+      test "//" (fun () -> expect (27 // 5) |> toEqual 5.4);
+      test "//" (fun () -> expect (8 // 4) |> toEqual 2.0);
+    ));
+
+    describe "power" (fun () ->
+      test "power" (fun () -> expect (power 7 3) |> toEqual 343);
+      test "**" (fun () -> expect (7 ** 3) |> toEqual 343);
     );
+
+    test "clamp" (fun () -> expect (clamp ~lower:0 ~upper:8 5) |> toEqual 5);
+    test "clamp" (fun () -> expect (clamp ~lower:0 ~upper:8 9) |> toEqual 8);
+    test "clamp" (fun () -> expect (clamp ~lower:(-10) ~upper:(-5) 5) |> toEqual (-5));
+
+    test "inRange" (fun () -> expect (inRange ~lower:2 ~upper:4 3) |> toEqual true);
+    test "inRange" (fun () -> expect (inRange ~lower:5 ~upper:8 4) |> toEqual false);
+    test "inRange" (fun () -> expect (inRange ~lower:(-6) ~upper:(-2) (-3)) |> toEqual true);
   ));
 
   describe "List" (fun () ->

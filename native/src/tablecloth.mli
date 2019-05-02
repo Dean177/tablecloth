@@ -871,11 +871,11 @@ module Float : sig
   val negate : t -> t
   (** Flips the 'sign' of a [float] so that positive floats become negative and negative integers become positive. Zero stays as it is.
 
-    {[Float.negate 8 = (-8)]}
+    {[Float.negate 8. = (-8.)]}
 
-    {[Float.negate (-7) = 7]}
+    {[Float.negate (-7.) = 7.]}
 
-    {[Float.negate 0 = 0]} 
+    {[Float.negate 0. = 0.]} 
 
     Alternatively an operator is available:
 
@@ -890,16 +890,16 @@ module Float : sig
 
     {[Float.absolute 8. = 8.]} 
 
-    {[Float.absolute (-7) = 7]} 
+    {[Float.absolute (-7.) = 7.]} 
 
-    {[Float.absolute 0 = 0]} 
+    {[Float.absolute 0. = 0.]} 
   *)
 
   (** {1 Fancier math} *)
 
   val squareRoot : t -> t
   (** Take the square root of a number.
-    {[Float.squareRoot 4.0 = 9.0]}
+    {[Float.squareRoot 4.0 = 2.0]}
 
     {[Float.squareRoot 9.0 = 3.0]}
 
@@ -1553,6 +1553,9 @@ module Int : sig
   *)
 
   val in_range : t -> lower:t -> upper:t -> bool
+
+  val range : t -> t array
+  (** TODO *)
 
   (** {1 Conversion } *)
 
