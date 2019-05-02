@@ -17,10 +17,10 @@ module Array = struct
 
   let is_empty = isEmpty
 
-  let initialize ~(length : int) ~(f : int -> 'a) = 
+  let initialize ~(length : int) ~(f : int -> 'a) =
     if length <= 0 then empty else Base.Array.init length ~f
-  
-  let repeat ~(length : int) (e : 'a) : 'a array = 
+
+  let repeat ~(length : int) (e : 'a) : 'a array =
     if length <= 0 then empty else Base.Array.init length ~f:(fun _ -> e)
 
   let range ?(from = 0) (to_ : int) : int array =
@@ -34,14 +34,14 @@ module Array = struct
 
   let to_list = toList
 
-  let toIndexedList xs = 
-    Base.Array.fold_right xs ~init:(length xs - 1, []) ~f:(fun x (i, acc) -> 
+  let toIndexedList xs =
+    Base.Array.fold_right xs ~init:(length xs - 1, []) ~f:(fun x (i, acc) ->
       (i - 1, ((i, x) :: acc)))
     |> Base.snd
-  
+
   let to_indexed_list = toIndexedList
 
-  let get ~index a = 
+  let get ~index a =
     if index >= 0 && index < length a then Some (Base.Array.get a index) else None
 
   let set ~index ~value a = Base.Array.set a index value
@@ -57,10 +57,10 @@ module Array = struct
   let map ~(f : 'a -> 'b) (a : 'a array) : 'b array = Base.Array.map a ~f
 
   let mapWithIndex  ~(f : 'int -> 'a -> 'b) (a : 'a array) : 'b array = Base.Array.mapi a ~f
-  
+
   let map_with_index = mapWithIndex
-  
-  let mapi = mapWithIndex 
+
+  let mapi = mapWithIndex
 
   let map2 ~(f : 'a -> 'b -> 'c) (a : 'a array) (b : 'b array) : 'c array =
     let minLength = min (length a) (length b) in
@@ -80,8 +80,8 @@ module Array = struct
 
   let concatenate  (al : 'a array array) : 'a array = Base.Array.concat (Base.Array.to_list al)
 
-  let intersperse ~sep array = 
-    Base.Array.init (max 0 (Array.length array * 2 - 1)) ~f:(fun i -> 
+  let intersperse ~sep array =
+    Base.Array.init (max 0 (Array.length array * 2 - 1)) ~f:(fun i ->
       if i mod 2 <> 0 then sep else array.(i / 2)
     )
 
@@ -90,19 +90,19 @@ module Array = struct
   let all ~(f : 'a -> bool) (a : 'a array) : bool = Base.Array.for_all ~f a
 
   let slice ~from ?to_ array =
-    let defaultTo = match to_ with 
+    let defaultTo = match to_ with
       | None -> length array
       | Some i -> i
     in
-    let sliceFrom = 
-      if from >= 0 then min (length array) from 
+    let sliceFrom =
+      if from >= 0 then min (length array) from
       else max 0 (min (length array) (length array + from))
-    in    
-    let sliceTo = 
-      if defaultTo >= 0 then min (length array) defaultTo 
+    in
+    let sliceTo =
+      if defaultTo >= 0 then min (length array) defaultTo
       else max 0 (min (length array) (length array + defaultTo))
-    in    
-    
+    in
+
     if sliceFrom >= sliceTo then empty else (
       Base.Array.init (sliceTo - sliceFrom) ~f:(fun i -> array.(i + sliceFrom))
     )
@@ -111,14 +111,14 @@ module Array = struct
     Base.Array.fold ~f:(fun b a -> f a b) ~init:initial a
 
   let fold_left = foldLeft
-  
+
   let foldRight ~(f : 'a -> 'b -> 'b) ~(initial : 'b) (a : 'a array) : 'b =
     Base.Array.fold_right ~f ~init:initial a
 
   let fold_right = foldRight
 
-  let reverse (a : 'a array) : 'a array = 
-    let copy = Base.Array.copy a in 
+  let reverse (a : 'a array) : 'a array =
+    let copy = Base.Array.copy a in
     Base.Array.rev_inplace copy;
     copy
 
@@ -149,7 +149,7 @@ module Tuple2 = struct
   let mapEach ~(f : 'a -> 'x) ~(g : 'b -> 'y) ((a, b) : 'a * 'b) : 'x * 'y = (f a, g b)
 
   let map_each = mapEach
-  
+
   let mapAll ~(f : 'a -> 'b) (a1, a2) = (f a1, f a2)
 
   let map_all = mapAll
@@ -167,11 +167,11 @@ end
 
 module Tuple3 = struct
   let create a b c = (a, b, c)
-  
+
   let first ((a, _, _) : 'a * 'b * 'c) : 'a = a
 
   let second ((_, b, _) : 'a * 'b * 'c) : 'b = b
-  
+
   let third ((_, _, c) : 'a * 'b * 'c) : 'c = c
 
   let init ((a, b, _) : 'a * 'b * 'c): ('a * 'b) = (a, b)
@@ -208,7 +208,7 @@ module Tuple3 = struct
 
   let curry (f : (('a * 'b * 'c) -> 'd)) (a : 'a) (b : 'b)  (c : 'c) : 'd = f (a, b, c)
 
-  let uncurry (f : 'a -> 'b -> 'c -> 'd) ((a, b, c) : ('a * 'b * 'c)) : 'd =  f a b c 
+  let uncurry (f : 'a -> 'b -> 'c -> 'd) ((a, b, c) : ('a * 'b * 'c)) : 'd =  f a b c
 
   let toList ((a, b, c) : ('a * 'a * 'a)) : 'a list = [a; b; c]
 
@@ -484,7 +484,7 @@ module List = struct
   let splitWhen ~(f : 'a -> bool) (l : 'a list) : ('a list * 'a list) =
     match findIndex ~f l with
       | Some index -> splitAt ~index l
-      | None -> (l, []) 
+      | None -> (l, [])
 
 
   let split_when = splitWhen
@@ -542,7 +542,7 @@ module Option = struct
 
   let with_default = withDefault
 
-  
+
   let values (l : 'a option list) : 'a list =
     let valuesHelper (item : 'a option) (list : 'a list) : 'a list =
       match item with None -> list | Some v -> v :: list in
@@ -634,7 +634,7 @@ module Char = struct
 
   let to_code = toCode
 
-  let fromCode (i : int) : char option = 
+  let fromCode (i : int) : char option =
     if 0 <= i && i <= 255 then Some (Char.chr i) else None
 
   let from_code = fromCode
@@ -688,11 +688,11 @@ module Char = struct
   let is_printable = isPrintable
 
   let isWhitespace = Base.Char.is_whitespace
-  
+
   let is_whitespace = isWhitespace
 end
 
-module Float = struct 
+module Float = struct
   type t = float
 
   let add = (+.)
@@ -719,10 +719,10 @@ module Float = struct
 
   let (~-) = negate
 
-  let absolute = Base.Float.abs 
+  let absolute = Base.Float.abs
 
   let clamp n ~lower ~upper =
-    if n < lower then lower 
+    if n < lower then lower
     else if n > upper then upper
     else n
 
@@ -730,7 +730,7 @@ module Float = struct
     n >= lower && n < upper
 
   let in_range = inRange
-    
+
   let squareRoot = sqrt
 
   let square_root = squareRoot
@@ -746,7 +746,7 @@ module Float = struct
   let infinity = Base.Float.infinity
 
   let negativeInfinity = Base.Float.neg_infinity
-  
+
   let negative_infinity = negativeInfinity
 
   let e = Base.Float.euler
@@ -786,20 +786,20 @@ module Float = struct
   let atan2 ~y ~x = Base.Float.atan2 y x
 
   type direction = [
-    | `Zero 
-    | `AwayFromZero 
-    | `Up 
-    | `Down 
+    | `Zero
+    | `AwayFromZero
+    | `Up
+    | `Down
     | `Closest of [
-      | `Zero 
-      | `AwayFromZero 
-      | `Up 
+      | `Zero
+      | `AwayFromZero
+      | `Up
       | `Down
-      | `ToEven 
+      | `ToEven
     ]
   ]
 
-  let round ?(direction = (`Closest `Up)) n = 
+  let round ?(direction = (`Closest `Up)) n =
     match direction with
     | `Up | `Down | `Zero as dir -> Base.Float.round n ~dir
     | `AwayFromZero -> (
@@ -815,7 +815,7 @@ module Float = struct
         else Base.Float.round (n -. 0.5) ~dir:`Up
       )
     | (`Closest `Down) -> (
-        Base.Float.round (n -. 0.5) ~dir:`Up           
+        Base.Float.round (n -. 0.5) ~dir:`Up
       )
     | (`Closest `Up) -> Base.Float.round_nearest n
     | (`Closest `ToEven) -> Base.Float.round_nearest_half_to_even n
@@ -825,7 +825,7 @@ module Float = struct
   let ceiling = Base.Float.round_up
 
   let truncate = Base.Float.round_towards_zero
-  
+
   let fromPolar (r, theta) = (r * cos theta, r * sin theta)
 
   let from_polar = fromPolar
@@ -912,7 +912,7 @@ module Int = struct
 
   let clamp n ~lower ~upper = max lower (min upper n)
 
-  let inRange n ~lower ~upper = 
+  let inRange n ~lower ~upper =
     n >= lower && n < upper
 
   let in_range = inRange

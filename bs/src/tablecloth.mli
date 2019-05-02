@@ -1329,7 +1329,7 @@ module List : sig
 end
 
 (**
-  This module implements the `Result` type, which has a variant for 
+  This module implements the `Result` type, which has a variant for
   successful results (`'ok`), and one for unsuccessful results (`'error`).
 *)
 
@@ -1338,17 +1338,17 @@ module Result : sig
   (**
     `type` is the type constructor for a `Result` type. You specify
     the type of the `Error` and `Ok` variants, in that order.
-    
+
     ### Example
-    
+
     Here is how you would annotate a `Result` variable whose `Ok`
     variant is an integer and whose `Error` variant is a string:
-    
+
     ```ocaml
     let x: (string, int) Tablecloth.Result.t = Ok 3
     let y: (string, int) Tablecloth.Result.t = Error "bad"
     ```
-    
+
     ```reason
     let x: Tablecloth.Result.t(string, int) = Ok(3);
     let y: Tablecloth.Result.t(string, int) = Error("bad");
@@ -1405,11 +1405,11 @@ module Result : sig
   (**
     `withDefault(~default=defaultValue, result)`, when given an `Ok(value)`, returns
     `value`; if given an `Error(errValue)`, returns `defaultValue`.
-    
+
     (Same as `with_default`)
-    
+
     ### Example
-    
+
     ```reason
     withDefault(~default=0, Ok(12)) == 12;
     withDefault(~default=0, Error("bad")) == 0;
@@ -1420,11 +1420,11 @@ module Result : sig
   (**
     `with_default ~default:defaultValue, result`, when given an `Ok value`, returns
     `value`; if given an `Error errValue `, returns `defaultValue`.
-    
+
     (Same as `withDefault`)
-    
+
     ### Example
-    
+
     ```ocaml
     with_default ~default:0 (Ok 12) = 12
     with_default ~default:0 (Error "bad") = 0
@@ -1434,18 +1434,18 @@ module Result : sig
 
   (**
     `map2 ~f:fcn result_a result_b` (`map2(~f=fcn, result_a, result_b)` applies
-    `fcn`, a function taking two non-`Result` parameters and returning a 
+    `fcn`, a function taking two non-`Result` parameters and returning a
     non-`Result` result to two `Result` arguments `result_a` and `result_b` as follows:
-    
+
     If `result_a` and `result_b` are of the form `Ok a` and `OK b` (`Ok(a)` and `Ok(b)`
     in ReasonML), the return value is `Ok (f a b)` (`Ok(f(a, b)` in ReasonML).
-    
+
     If only one of `result_a` and `result_b` is of the form `Error err` (`Error(err)`
     in ReasonML), that becomes the return result.  If both are `Error` values,
     `map2` returns `result_a`.
-    
+
     ### Example
-    
+
     ```ocaml
     let sum_diff x y = (x + y) * (x - y)
     map2 ~f:sum_diff (Ok 7) (Ok 3) = Ok 40
@@ -1453,7 +1453,7 @@ module Result : sig
     map2 ~f:sum_diff (Ok 7) (Error "err B") = Error "err B"
     map2 ~f:sum_diff (Error "err A") (Error "err B") = Error ("err A")
     ```
-    
+
     ```reason
     let sumDiff = (x, y) => { (x + y) * (x - y) };
     map2(~f=sumDiff, Ok(7), Ok(3)) == Ok(40);
@@ -1467,20 +1467,20 @@ module Result : sig
   (**
     `combine results` (`combine(results)` in ReasonML) takes a list of `Result` values. If all
     the elements in `results` are of the form `Ok x` (`Ok(x)` in ReasonML), then `combine`
-    creates a list `xs` of all the values extracted from their `Ok`s, and returns 
+    creates a list `xs` of all the values extracted from their `Ok`s, and returns
     `Ok xs` (`Ok(xs)` in ReasonML)
-    
+
     If any of the elements in `results` are of the form `Error err`
     (`Error(err)` in ReasonML), the first of them is returned as
     the result of `combine`.
-    
+
     ### Example
-    
+
     ```ocaml
     combine [Ok 1; Ok 2; Ok 3; Ok 4] = Ok [1; 2; 3; 4]
     combine [Ok 1; Error "two"; Ok 3; Error "four"] = Error "two"
     ```
-    
+
     ```reason
     combine([Ok(1), Ok(2), Ok(3), Ok(4)]) == Ok([1, 2, 3, 4]);
     combine([Ok(1), Error("two"), Ok(3), Error("four")]) == Error("two")
@@ -1492,17 +1492,17 @@ module Result : sig
     `map f r` (`map(f, r)` in ReasonML) applies a function `f`, which
     takes a non-`Result` argument and returns a non-`Result` value, to
     a `Result` variable `r` as follows:
-    
+
     If `r` is of the form `Ok x` (`Ok(x) in ReasonMl), `map` returns
     `Ok (f x)` (`Ok(f(x))` in ReasonML). Otherwise, `r` is an `Error`
     value and is returned unchanged.
-    
+
     ### Example
     ```ocaml
     map (fun x -> x * x) (Ok 3) = Ok 9
     map (fun x -> x * x) (Error "bad") = Error "bad"
     ```
-    
+
     ```reason
     map((x) => {x * x}, Ok(3)) == Ok(9);
     map((x) => {x * x}, Error("bad")) == Error("bad");
@@ -1513,42 +1513,42 @@ module Result : sig
   (**
     `toOption(r)` converts a `Result` value `r` to an `Option` value as follows:
     a value of `Ok(x)` becomes `Some(x)`; a value of `Error(err)` becomes `None`.
-    
+
     (Same as `to_option`.)
-    
+
     ### Example
-    
+
     ```reason
     toOption(Ok(42)) == Some(42);
     toOption(Error("bad")) == None;
     ```
-  *)    
+  *)
   val toOption : ('err, 'ok) t -> 'ok option
 
   (**
     `to_option r` converts a `Result` value `r` to an `Option` value as follows:
     a value of `Ok x` becomes `Some x`; a value of `Error err` becomes `None`.
-    
+
     (Same as `toOption`.)
-    
+
     ### Example
-    
+
     ```ocaml
     to_option (Ok 42) = Some 42
     to_option (Error "bad") = None
     ```
-  *)    
+  *)
   val to_option : ('err, 'ok) t -> 'ok option
 
   (**
     `andThen(~f = fcn, r)` applies function `fcn`, which takes a non-`Result`
     parameter and returns a `Result`, to a `Result` variable `r`.
-    
+
     If `r` is of the form `Ok(x)`, `andThen` returns `f(x)`;
     otherwise `r` is an `Error`, and is returned unchanged.
-    
+
     (Same as `and_then`.)
-    
+
     ### Example
 
     ```reason
@@ -1559,15 +1559,15 @@ module Result : sig
         Ok(1.0 /. x)
       }
     };
-    
+
     andThen(~f = recip, Ok(4.0)) == Ok(0.25);
     andThen(~f = recip, Error("bad")) == Error("bad");
     andThen(~f = recip, Ok(0.0)) == Error("Divide by zero");
     ```
-    
+
     `andThen` is usually used to implement a chain of function
     calls, each of which returns a `Result` value.
-    
+
     ```reason
     let root = (x: float): Tablecloth.Result.t(string, float) => {
       if (x < 0.0) {
@@ -1576,7 +1576,7 @@ module Result : sig
         Ok(sqrt(x));
       }
     };
-    
+
     root(4.0) |> andThen(~f = recip) == Ok(0.5);
     root(-2.0) |> andThen(~f = recip) == Error("Cannot be negative");
     root(0.0) |> andThen(~f = recip) == Error("Divide by zero");
@@ -1588,12 +1588,12 @@ module Result : sig
   (**
     `and_then ~f:fcn r` applies function `fcn`, which takes a non-`Result`
     parameter and returns a `Result`, to a `Result` variable `r`.
-    
+
     If `r` is of the form `Ok x`, `and_then` returns `f x`;
     otherwise `r` is an `Error`, and is returned unchanged.
-    
+
     (Same as `andThen`.)
-    
+
     ### Example
 
     ```ocaml
@@ -1603,15 +1603,15 @@ module Result : sig
       else
         Ok (1.0 /. x)
     )
-    
+
     and_then ~f:recip (Ok 4.0) = Ok 0.25
     and_then ~f:recip (Error "bad") = Error "bad"
     and_then ~f:recip (Ok 0.0) = Error "Divide by zero"
     ```
-    
+
     `and_then` is usually used to implement a chain of function
     calls, each of which returns a `Result` value.
-    
+
     ```ocaml
     let root (x:float) : (string, float) Tablecloth.Result.t = (
       if (x < 0.0) then
@@ -1619,12 +1619,12 @@ module Result : sig
       else
         Ok (sqrt x)
     )
-    
+
     root 4.0 |> and_then ~f:recip = Ok 0.5
-    root (-2.0) |> and_then ~f:recip = Error "Cannot be negative" 
+    root (-2.0) |> and_then ~f:recip = Error "Cannot be negative"
     root(0.0) |> and_then ~f:recip = Error "Divide by zero"
     ```
-  *) 
+  *)
   val and_then :
     f:('ok -> ('err, 'value) t) -> ('err, 'ok) t -> ('err, 'value) t
 
@@ -1634,11 +1634,11 @@ module Result : sig
     the `result`, using `errFormat` if the `result` is an `Error` value or
     `okFormat` if the `result` is an `Ok` value. `destFormat` is a formatter
     that tells where to send the output.
-    
+
     The following example will print `<ok: 42><error: bad>`.
-    
+
     ### Example
-    
+
     ```ocaml
     let good: (string, int) Tablecloth.Result.t = Ok 42
     let not_good: (string, int) Tablecloth.Result.t = Error "bad"
@@ -1646,7 +1646,7 @@ module Result : sig
     pp Format.pp_print_string Format.pp_print_int Format.std_formatter not_good
     Format.pp_print_newline Format.std_formatter ();
     ```
-    
+
     ```reason
     let good: Tablecloth.Result.t(string, int) = Ok(42);
     let notGood: Tablecloth.Result.t(string, int) = Error("bad");
@@ -1692,12 +1692,12 @@ module Option : sig
   (**
     `andThen(~f = fcn, opt)` applies function `fcn`, which takes a non-`Option`
     parameter and returns a `Option`, to an `Option` variable `opt`.
-    
+
     If `opt` is of the form `Some(x)`, `andThen` returns `f(x)`;
     otherwise `andThen` returns `None`.
-    
+
     (Same as `and_then`.)
-    
+
     ### Example
     ```reason
     let recip = (x: float): option(float) => {
@@ -1707,15 +1707,15 @@ module Option : sig
         Some(1.0 /. x);
       }
     };
-    
+
     andThen(~f = recip, Some(4.0)) == Some(0.25);
     andThen(~f = recip, None) == None;
     andThen(~f = recip, Some(0.0)) == None;
     ```
-    
+
     `andThen` is usually used to implement a chain of function
     calls, each of which returns an `Option` value.
-    
+
     ```reason
     let root = (x: float): option(float) => {
       if (x < 0.0) {
@@ -1724,7 +1724,7 @@ module Option : sig
         Some(sqrt(x));
       }
     };
-    
+
     root(4.0) |> andThen(~f = recip) == Some(0.5);
     root(-2.0) |> andThen(~f = recip) == None;
     root(0.0) |> andThen(~f = recip) == None;
@@ -1735,12 +1735,12 @@ module Option : sig
   (**
     `and_then ~f:fcn opt` applies function `fcn`, which takes a non-`Option`
     parameter and returns an `Option`, to an `Option` variable `opt`.
-    
+
     If `opt` is of the form `Some x`, `and_then` returns `f x`;
     otherwise it returns `None`.
-    
+
     (Same as `andThen`.)
-    
+
     ### Example
     ```ocaml
     let recip (x:float) : float option = (
@@ -1749,15 +1749,15 @@ module Option : sig
       else
         Some (1.0 /. x)
     )
-    
+
     and_then ~f:recip (Some 4.0) = Some 0.25
     and_then ~f:recip None = None
     and_then ~f:recip (Some 0.0) = None
     ```
-    
+
     `and_then` is usually used to implement a chain of function
     calls, each of which returns an `Option` value.
-    
+
     ```ocaml
     let root (x:float) : float option = (
       if (x < 0.0) then
@@ -1765,9 +1765,9 @@ module Option : sig
       else
         Some (sqrt x)
     )
-    
+
     root 4.0 |> and_then ~f:recip = Some 0.5
-    root (-2.0) |> and_then ~f:recip = None 
+    root (-2.0) |> and_then ~f:recip = None
     root(0.0) |> and_then ~f:recip = None
     ```
   *)
@@ -1777,13 +1777,13 @@ module Option : sig
     `or_ opt_a opt_b` (`or_(opt_a, opt_b)` in ReasonML) returns
     `opt_a` if it is of the form `Some x` (`Some(x) in ReasonML);
     otherwise, it returns `opt_b`.
-    
+
     Unlike the built in or operator, the or_ function does not short-circuit.
     When you call `or_`, both arguments are evaluated before
     being passed to the function.
-    
+
     ### Example
-    
+
     ```ocaml
     or_ (Some 11) (Some 22) = Some 11
     or_ None (Some 22) = Some 22
@@ -1802,12 +1802,12 @@ module Option : sig
 
   (**
     `orElse(opt_a, opt_b)` returns `opt_b` if it is of the form `Some(x)`;
-    otherwise, it returns `opt_a`. 
-    
+    otherwise, it returns `opt_a`.
+
     (Same as `or_else`.)
-    
+
     ### Example
-    
+
     ```reason
     orElse(Some(11), Some(22)) == Some(22);
     orElse(None, Some(22)) == Some(22);
@@ -1821,11 +1821,11 @@ module Option : sig
   (**
     `or_else opt_a opt_b` returns `opt_b` if it is of the form `Some x`;
     otherwise, it returns `opt_a`.
-    
+
     (Same as `orElse`.)
-    
+
     ### Example
-    
+
     ```ocaml
     orElse (Some 11) (Some 22) = Some 22
     orElse None (Some 22) = Some 22
@@ -1839,14 +1839,14 @@ module Option : sig
     `map ~f:fcn opt` (`map(~f = fcn, opt)` in ReasonML) returns
     `fcn x` (`fcn(x)` in ReasonML) if `opt` is of the form
     `Some x` (`Some(x)` in ReasonML); otherwise, it returns `None`.
-    
+
     ### Example
-    
+
     ```ocaml
     map ~f:(fun x -> x * x) (Some 9) = Some 81
     map ~f:(fun x -> x * x) None = None
     ```
-    
+
     ```reason
     map(~f = (x) => x * x, Some(9)) == Some(81)
     map(~f = (x) => x * x, None) == None
@@ -1857,11 +1857,11 @@ module Option : sig
   (**
     `withDefault(~default = defVal, opt)` If `opt` is of the form `Some(x)`,
     this function returns `x`. Otherwise, it returns the default value `defVal`.
-    
+
     (Same as `with_default`.)
-    
+
     ### Example
-    
+
     ```reason
     withDefault(~default = 99, Some(42)) == 42;
     withDefault(~default = 99, None) == 99;
@@ -1872,11 +1872,11 @@ module Option : sig
   (**
     `with_default(~default: def_val, opt)` If `opt` is of the form `Some x`,
     this function returns `x`. Otherwise, it returns the default value `def_val`.
-    
+
     (Same as `withDefault`.)
-    
+
     ### Example
-    
+
     ```ocaml
     with_default ~default:99 (Some 42) = 42
     with_default ~default:99 None = 99
@@ -1889,29 +1889,29 @@ module Option : sig
   (**
     `toList(opt)` returns the list `[x]` if `opt` is of the form `Some(x)`;
     otherwise, it returns the empty list.
-    
+
     (Same as `to_list`.)
-    
+
     ### Example
     ```reason
     toList(Some(99)) == [99];
     toList(None) == [];
     ```
-  *)  
+  *)
   val toList : 'a option -> 'a list
 
   (**
     `to_list opt` returns the list `[x]` if `opt` is of the form `Some x`;
     otherwise, it returns the empty list.
-    
+
     (Same as `toList`.)
-    
+
     ### Example
     ```reason
     toList (Some 99) = [99]
     toList None = []
     ```
-  *)  
+  *)
   val to_list : 'a option -> 'a list
 
   (**
@@ -1929,11 +1929,11 @@ module Option : sig
   (**
     `toOption(~sentinel = s, x)` returns `Some(x)` unless `x` equals the sentinel
     value `s`, in which case `toOption` returns `None`.
-    
+
     (Same as `to_option`.)
-    
+
     ### Example
-    
+
     ```reason
     toOption(~sentinel = 999, 100) == Some(100);
     toOption(~sentinel = 999, 999) == None;
@@ -1944,11 +1944,11 @@ module Option : sig
   (**
     `to_option ~sentinel:s, x` returns `Some x` unless `x` equals the sentinel
     value `s`, in which case `to_option` returns `None`.
-    
+
     (Same as `toOption`.)
-    
+
     ### Example
-    
+
     ```reason
     to_option ~sentinel: 999 100 = Some 100
     to_option ~sentinel: 999 999 = None
@@ -1970,7 +1970,7 @@ module Char : sig
   (**
     `toCode(ch)` returns the ASCII value for the given character `ch`.
     (Same as `to_code`.)
-    
+
     ### Example
     ```reason
     toCode('a') == 97;
@@ -1982,7 +1982,7 @@ module Char : sig
   (**
     `to_code ch` returns the ASCII value for the given character `ch`.
     (Same as `toCode`.)
-    
+
     ### Example
     ```ocaml
     to_code 'a' = 97
@@ -1994,9 +1994,9 @@ module Char : sig
   (**
     `fromCode(n)` returns the character corresponding to ASCII code `n`
     as `Some(ch)` if `n` is in the range 0-255; otherwise `None`.
-    
+
     (Same as `from_code`.)
-    
+
     ### Example
     ```reason
     fromCode(65) == Some('A');
@@ -2010,9 +2010,9 @@ module Char : sig
   (**
     `from_code n` returns the character corresponding to ASCII code `n`
     as `Some ch` if `n` is in the range 0-255; otherwise `None`.
-    
+
     (Same as `fromCode`.)
-    
+
     ### Example
     ```ocaml
     from_code 65 = Some 'A'
@@ -2025,9 +2025,9 @@ module Char : sig
 
   (**
     `toString(ch)` returns a string of length one containing `ch`.
-    
+
     (Same as `to_string`.)
-    
+
     ### Example
     ```reason
     toString('a') == "a";
@@ -2037,9 +2037,9 @@ module Char : sig
 
   (**
     `to_string ch` returns a string of length one containing `ch`.
-    
+
     (Same as `toString`.)
-    
+
     ### Example
     ```ocaml
     to_string 'a' = "a"
@@ -2050,9 +2050,9 @@ module Char : sig
   (**
     `fromString(s)` converts the first (and only) character in `s` to `Some(ch)`.
     If the length of `s` is not equal to one, returns `None`.
-    
+
     (Same as `from_string`.)
-    
+
     ### Example
     ```reason
     fromString("R") == Some('R');
@@ -2065,9 +2065,9 @@ module Char : sig
   (**
     `from_string s` converts the first (and only) character in `s` to `Some ch`.
     If the length of `s` is not equal to one, returns `None`.
-    
+
     (Same as `fromString`.)
-    
+
     ### Example
     ```ocaml
     from_string "R"= Some 'R'
@@ -2081,9 +2081,9 @@ module Char : sig
     For characters in the range `'0'` to `'9'`, `toDigit(ch)` returns the
     corresponding integer as `Some(n)`; for any characters outside that
     range, returns `None`.
-    
+
     (Same as `to_digit`.)
-    
+
     ### Example
     ```reason
     toDigit('5') == Some(5);
@@ -2096,9 +2096,9 @@ module Char : sig
     For characters in the range `'0'` to `'9'`, `to_digit ch` returns the
     corresponding integer as `Some n`; for any characters outside that
     range, returns `None`.
-    
+
     (Same as `toDigit`.)
-    
+
     ### Example
     ```ocaml
     to_digit '5' = Some 5
@@ -2111,9 +2111,9 @@ module Char : sig
     For characters in the range `'A'` to `'Z'`, `toLowercase(ch)` returns the
     corresponding lower case letter; for any characters outside that
     range, returns the character unchanged.
-    
+
     (Same as `to_lowercase`.)
-    
+
     ### Example
     ```reason
     toLowercase('G') == 'g';
@@ -2127,9 +2127,9 @@ module Char : sig
     For characters in the range `'A'` to `'Z'`, `to_lowercase ch` returns the
     corresponding lower case letter; for any characters outside that
     range, returns the character unchanged.
-    
+
     (Same as `toLowercase`.)
-    
+
     ### Example
     ```ocaml
     to_lowercase 'G' = 'g'
@@ -2143,9 +2143,9 @@ module Char : sig
     For characters in the range `'a'` to `'z'`, `toUppercase(ch)` returns the
     corresponding upper case letter; for any characters outside that
     range, returns the character unchanged.
-    
+
     (Same as `to_uppercase`.)
-    
+
     ### Example
     ```reason
     toUppercase('g') == 'G';
@@ -2159,25 +2159,25 @@ module Char : sig
     For characters in the range `'A'` to `'Z'`, `to_uppercase ch` returns the
     corresponding upper case letter; for any characters outside that
     range, returns the character unchanged.
-    
+
     (Same as `toUppercase`.)
-    
+
     ### Example
     ```ocaml
     to_uppercase 'g' = 'G'
     to_uppercase 'H' = 'H'
     to_uppercase '%' = '%'
     ```
-  *) 
+  *)
   val to_uppercase : char -> char
 
   (**
     `isLowercase(ch)` returns `true` if `ch`
     is in the range `'a'` to `'z'`,
     `false` otherwise.
-    
+
     (Same as `is_lowercase`.)
-    
+
     ### Example
     ```reason
     isLowercase('g') == true;
@@ -2191,9 +2191,9 @@ module Char : sig
     `is_lowercase ch` returns `true` if `ch`
     is in the range `'a'` to `'z'`,
     `false` otherwise.
-    
+
     (Same as `isLowercase`.)
-    
+
     ### Example
     ```ocaml
     is_lowercase 'g' = true
@@ -2207,9 +2207,9 @@ module Char : sig
     `isUppercase(ch)` returns `true` if `ch`
     is in the range `'A'` to `'Z'`,
     `false` otherwise.
-    
+
     (Same as `is_uppercase`.)
-    
+
     ### Example
     ```reason
     isUppercase('G') == true;
@@ -2223,9 +2223,9 @@ module Char : sig
     `is_uppercase ch` returns `true` if `ch`
     is in the range `'A'` to `'Z'`,
     `false` otherwise.
-    
+
     (Same as `isUppercase`.)
-    
+
     ### Example
     ```ocaml
     is_uppercase 'G' = true
@@ -2239,9 +2239,9 @@ module Char : sig
     `isLetter(ch)` returns `true` if `ch` is
     in the range `'A'` to `'Z'`
     or `'a'` to `'z'`, `false` otherwise.
-    
+
     (Same as `is_letter`.)
-    
+
     ### Example
     ```reason
     isLetter('G') == true;
@@ -2254,9 +2254,9 @@ module Char : sig
   (**
     `is_letter ch` returns `true` if `ch` is in the range `'A'` to `'Z'`
     or `'a'` to `'z'`, `false` otherwise.
-    
+
     (Same as `isLetter`.)
-    
+
     ### Example
     ```ocaml
     is_letter 'G' = true
@@ -2269,9 +2269,9 @@ module Char : sig
   (**
     `isDigit(ch)` returns `true` if `ch` is in the range `'0'` to `'9'`;
     `false` otherwise.
-    
+
     (Same as `is_digit`.)
-    
+
     ### Example
     ```reason
     isDigit('3') == true;
@@ -2284,9 +2284,9 @@ module Char : sig
   (**
     `is_digit ch` returns `true` if `ch` is in the range `'0'` to `'9'`;
     `false` otherwise.
-    
+
     (Same as `isDigit`.)
-    
+
     ### Example
     ```ocaml
     is_digit '3' = true
@@ -2300,9 +2300,9 @@ module Char : sig
     `isAlphanumeric(ch)` returns `true` if `ch` is
     in the range `'0'` to `'9'`, `'A'` to `'Z'`, or `'a'` to `'z'`;
     `false` otherwise.
-    
+
     (Same as `is_alphanumeric`.)
-    
+
     ### Example
     ```reason
     isAlphanumeric('3') == true;
@@ -2317,9 +2317,9 @@ module Char : sig
     `is_alphanumeric ch` returns `true` if `ch` is
     in the range `'0'` to `'9'`, `'A'` to `'Z'`, or `'a'` to `'z'`;
     `false` otherwise.
-    
+
     (Same as `isAlphanumeric`.)
-    
+
     ### Example
     ```ocaml
     is_alphanumeric '3' = true
@@ -2334,9 +2334,9 @@ module Char : sig
     `isPrintable(ch)` returns `true` if `ch` is
     in the range `' '` to `'~'`, (ASCII 32 to 127, inclusive)
     `false` otherwise.
-    
+
     (Same as `is_printable`.)
-    
+
     ### Example
     ```reason
     isPrintable('G') == true;
@@ -2351,9 +2351,9 @@ module Char : sig
     `is_printable ch` returns `true` if `ch` is
     in the range `' '` to `'~'`, (ASCII 32 to 127, inclusive)
     `false` otherwise.
-    
+
     (Same as `isPrintable`.)
-    
+
     ### Example
     ```ocaml
     is_printable 'G' = true
@@ -2370,9 +2370,9 @@ module Char : sig
     `'\012'` (form feed), `'\r'` (carriage return), or
     `' '` (space). Returns `false` otherwise.
 
-    
+
     (Same as `is_whitespace`.)
-    
+
     ### Example
     ```reason
     isWhitespace('\t') == true;
@@ -2389,9 +2389,9 @@ module Char : sig
     `'\012'` (form feed), `'\r'` (carriage return), or
     `' '` (space). Returns `false` otherwise.
 
-    
+
     (Same as `isWhitespace`.)
-    
+
     ### Example
     ```ocaml
     is_whitespace '\t' = true
