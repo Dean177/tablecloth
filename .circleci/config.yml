@@ -41,9 +41,10 @@ jobs:
             - v2-native-dependencies-
       # m4 is a system dependency required by conf-m4 -> ocamlfind -> fmt -> alcotest
       - run: sudo apt-get install -y m4
-      - run: opam update && opam install alcotest base dune junit junit_alcotest -y
+      - run: opam update && opam install alcotest base dune junit junit_alcotest odoc -y
       - run: opam config exec -- dune build
       - run: opam config exec -- dune runtest -f
+      - run: opam config exec -- dune build @doc -f
       - save_cache:
           key: v2-native-dependencies-{{ .Branch }}-{{ checksum "tablecloth-native.opam" }}
           paths:
