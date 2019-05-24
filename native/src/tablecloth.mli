@@ -323,13 +323,19 @@ numbers = [|3; 2; 1|]]} *)
 end
 
 module List : sig
+  type 'a t = 'a list
+
   val concat : 'a list list -> 'a list
 
-  val sum : int list -> int
+  val sum : (module Container.Summable with type t = 'a) -> 'a t -> 'a
+  (** Get the total of adding all of the integers in an array.
 
-  val floatSum : float list -> float
+    {[List.sum (module Int) [|1; 2; 3|] = 6]}
 
-  val float_sum : float list -> float
+    {[List.sum (module Float) [|1.0; 2.0; 3.0|] = 6.0]}
+
+    This will most often by used with the {!Int} or {!Float} modules, but any module conforming to {!Container.Summable} can be used.
+  *)
 
   val map : f:('a -> 'b) -> 'a list -> 'b list
 

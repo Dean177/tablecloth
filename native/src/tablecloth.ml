@@ -8,6 +8,14 @@ let identity (value : 'a) : 'a = value
 
 let flip f x y = f y x
 
+module Container = struct
+  module type Summable = sig
+    type t
+    val zero : t
+    val (+) : t -> t -> t
+  end
+end
+
 module Array = struct
   type 'a t = 'a array
 
@@ -59,13 +67,8 @@ module Array = struct
 
   let set ~index ~value a = Base.Array.set a index value
 
-  let sum (a : int array) : int = Base.Array.fold a ~init:0 ~f:( + )
-
-  let floatSum (a : float array) : float =
-    Base.Array.fold a ~init:0.0 ~f:( +. )
-
-
-  let float_sum = floatSum
+  let sum (type a) (module M : Container.Summable with type t = a) (a : a t) : a =
+    Base.Array.fold a ~init:M.zero ~f:(M.(+))
 
   let filter ~(f : 'a -> bool) (a : 'a array) : 'a array =
     Base.Array.filter a ~f
@@ -274,21 +277,16 @@ module Tuple3 = struct
 end
 
 module List = struct
+  type 'a t = 'a list
+
   let concat (ls : 'a list list) : 'a list = Base.List.concat ls
 
   let reverse (l : 'a list) : 'a list = Base.List.rev l
 
   let append (l1 : 'a list) (l2 : 'a list) : 'a list = Base.List.append l1 l2
 
-  let sum (l : int list) : int =
-    Base.List.reduce l ~f:( + ) |> Base.Option.value ~default:0
-
-
-  let floatSum (l : float list) : float =
-    Base.List.reduce l ~f:( +. ) |> Base.Option.value ~default:0.0
-
-
-  let float_sum = floatSum
+  let sum (type a) (module M : Container.Summable with type t = a) (a : a t) : a =
+    Base.List.fold a ~init:M.zero ~f:(M.(+))
 
   let map ~(f : 'a -> 'b) (l : 'a list) : 'b list = Base.List.map l ~f
 
