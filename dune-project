@@ -1,2 +1,2 @@
-(lang dune 1.6)
+(lang dune 1.10)
 (using fmt 1.2)
